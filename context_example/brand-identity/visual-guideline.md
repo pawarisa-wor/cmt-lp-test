@@ -64,5 +64,11 @@
 
 ## Moodboard
 
-- ไฟล์: `context/brand-identity/moodboard.png` (สร้างด้วย skill `create-moodboard`, ratio 9:16)
-- สไตล์ที่แนะนำสำหรับแบรนด์นี้: **A) Flowing** (editorial ซ้อนทับ ดูมีชีวิต) มากกว่า bento grid
+- **`moodboard.png`** — ยังไม่ได้ generate (ต้องมี `KIE_API_KEY` ก่อน)
+  prompt ที่ประกอบเสร็จแล้วอยู่ที่ `moodboard-prompt.txt` ในโฟลเดอร์เดียวกัน
+  สร้างด้วยคำสั่งเดียว:
+  ```bash
+  node scripts/gen-images.mjs --moodboard --dry-run   # ดู prompt ก่อน
+  node scripts/gen-images.mjs --moodboard             # ยิงจริง (9:16, 2K)
+  ```
+- สไตล์ที่เลือกสำหรับแบรนด์นี้: **A) Flowing** (editorial ซ้อนทับ ดูมีชีวิต) มากกว่า bento grid

@@ -37,10 +37,10 @@ npm i -g vercel
 | เวลา | ขั้น | พิมพ์อะไรใน Claude Code |
 |---|---|---|
 | 0:00–0:20 | เช็ค `.env` + อธิบาย funnel และโครงรีโป | — |
-| 0:20–0:45 | **1. Build company context** | `ใช้ skill create-company-context` |
+| 0:20–0:45 | **1. Build company context** | กรอก `context/*.md` (มี `templates/` เปล่า + `context_example/` ให้ copy) |
 | 0:45–1:05 | **2. Product brief** — offer, ราคา, sku, testimonials | กรอก `context/offers.md` |
 | 1:05–1:25 | **3. Setup HubSpot + Stripe** | `ใช้ skill setup-crm` |
-| 1:25–1:45 | **4. Moodboard + visual direction** | `ใช้ skill create-moodboard` |
+| 1:25–1:45 | **4. Create a moodboard** (ได้ moodboard.png + visual-guideline.md + voice.md) | `ใช้ skill create-moodboard` |
 | 1:45–2:40 | **5. Build landing page** (offer → wireframe → copy → assets → build) | `ใช้ skill generate-salepage` |
 | 2:40–2:50 | **Deploy** ขึ้น Vercel | `vercel --prod` |
 | 2:50–3:00 | **6. Test lead** + ดู Deal เด้งใน HubSpot | `node scripts/test-lead.mjs` |
@@ -52,17 +52,20 @@ npm i -g vercel
 ## 2. โครง repo
 
 ```
+templates/                  ← หัวข้อเปล่า (company/clients/offers/voice + brand-identity)
+                              ไม่อยากกรอก? `cp -r context_example/. context/` ใช้ตัวอย่างเลย
+
 context/                    ← ข้อมูลแบรนด์ที่ใช้งานจริง
   company.md  clients.md  offers.md  voice.md
-  brand-identity/visual-guideline.md
+  brand-identity/visual-guideline.md  moodboard-prompt.txt
   ▸ ตอนนี้ใส่แบรนด์ตัวอย่าง GLOW SOCIETY (wellness social club) ไว้ให้แล้ว
-    เพื่อให้ทดลองรันได้ทันที — จะทำแบรนด์ตัวเองก็สั่ง create-company-context ทับได้
+    เพื่อให้ทดลองรันได้ทันที — จะทำแบรนด์ตัวเอง: `cp -r templates/. context/` แล้วกรอก
 
 context_example/            ← ตัวอย่างอ้างอิง (ไม่ต้องแก้)
 
 .claude/skills/
-  create-company-context/   (+ templates/ = หัวข้อเปล่าสำหรับ reset)
   create-moodboard/         (+ references/ = prompt 2 สไตล์: flowing / bento grid)
+                            → ออก 3 ไฟล์: moodboard.png, visual-guideline.md, voice.md
   setup-crm/
   generate-salepage/        (+ references/ 7 ไฟล์: offer-building, design-standards,
                               copywriting, lead-form, tracking, cro-check, project-scaffold)
@@ -96,8 +99,8 @@ cp -r "workspace/salepage_[PROJECT]" workspace/salepage_myproject
 แล้วบอก Claude Code:
 
 ```
-อ่าน CLAUDE.md แล้วเริ่มจาก skill create-company-context
-เพื่อสร้าง context ของแบรนด์ผม จากนั้นทำ salepage ใน workspace/salepage_myproject
+อ่าน CLAUDE.md แล้วช่วยสัมภาษณ์ผมเพื่อกรอก context/ ของแบรนด์ผม
+(ใช้หัวข้อจาก templates/) จากนั้นทำ moodboard แล้วทำ salepage ใน workspace/salepage_myproject
 ```
 
 ---

@@ -45,9 +45,13 @@ Copywriting → Assets prep → Create landing page with HubSpot connection → 
 
 | ต้องมี | ได้จาก | ถ้ายังไม่มี |
 |---|---|---|
-| `context/` มีข้อมูลแบรนด์จริง | skill `create-company-context` | หยุดแล้วเรียก skill นั้นก่อน |
-| visual direction + moodboard | skill `create-moodboard` | เตือนผู้ใช้ว่าหน้าเพจจะไม่ตรงแบรนด์ ถามว่าจะทำก่อนไหม |
+| `context/{company,clients,offers}.md` มีข้อมูลจริง | ผู้ใช้กรอกจาก `templates/` หรือ copy `context_example/` | หยุด — ขั้นถัดไปจะเดาข้อมูลแบรนด์เอง |
+| **`context/brand-identity/moodboard.png` + `visual-guideline.md` + `context/voice.md`** | skill `create-moodboard` | **หยุดแล้วเรียก `create-moodboard` ก่อน** |
 | `catalog.json` (offers/ราคา/sku) | skill `setup-crm` | ทำ Stop 1–4 ได้ แต่ **Stop 5 ต้องมี** |
+
+**หน้าเพจต้อง follow brand identity ที่สร้างไว้** — palette, ฟอนต์, photography direction และ
+โทน copy ทุกบรรทัดมาจาก `visual-guideline.md` + `voice.md` ห้ามคิดสี/ฟอนต์/โทนใหม่เอง
+ถ้าเห็นว่า guideline ขัดกับสิ่งที่ควรทำ ให้เสนอแก้ที่ guideline ก่อน แล้วค่อยทำหน้าเพจตามนั้น
 
 ---
 
@@ -67,8 +71,8 @@ template folder มีแค่ `technical-setup.md` + `assets-plan.md` (โค�
 1. Read **all** of: `context/company.md`, `clients.md`, `offers.md`, `voice.md`,
    `brand-identity/visual-guideline.md`, plus this project's `technical-setup.md`
    (และ `catalog.json` ถ้ามีแล้ว).
-   ถ้า `context/` ว่าง → หยุด แล้วบอกให้ใช้ skill `create-company-context` ก่อน
-   (จะใช้ `context_example/` แทนได้เฉพาะกรณีผู้ใช้ยืนยันว่าอยากลองด้วยแบรนด์ตัวอย่าง)
+   ถ้า `context/` ว่าง → หยุด แล้วบอกให้กรอกจาก `templates/` ก่อน (หรือเสนอสัมภาษณ์แล้วกรอกให้)
+   ถ้าอยากลองเร็วๆ ด้วยแบรนด์ตัวอย่าง: `cp -r context_example/. context/` แล้วบอกผู้ใช้ให้ชัด
 2. Confirm the two things that decide everything else:
    - **เป้าหมายของหน้านี้** (default: เก็บ lead → ขาย hero offer)
    - **customer journey** (default: FB/IG Ad → salepage → lead form → Stripe checkout → thanks)

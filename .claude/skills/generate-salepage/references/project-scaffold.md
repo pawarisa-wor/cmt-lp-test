@@ -149,6 +149,9 @@ body: { properties, associations: [{ to: { id: String(contactId) },
 
 ลำดับ: validate → `upsertContact` → `createDeal` → คืน `{ ok, contactId, dealId, offer }`
 
+body ที่รับ: `{ name, email, phone, sku }` — **บังคับแค่ 3 ช่องแรก** ตาม `lead-form.md`
+`location` / `service` เป็น optional (ถ้าหน้าเพจนั้นมีช่องให้เลือก)
+
 ```js
 // amount ต้องมาจาก catalog เท่านั้น — browser ส่งมาแค่ sku
 const offer = findOffer(String(body.sku || '').trim());
@@ -159,14 +162,16 @@ properties: {
   pipeline: catalog.hubspot.pipeline,
   dealstage: catalog.hubspot.stageOnLead,
   amount: String(offer.price),          // ← ไม่ใช่ body.price
-  [propName('location')]: location,
-  [propName('service_interest')]: service,
   [propName('package')]: offer.sku,
   [propName('source_page')]: catalog.sourcePage,
+  // ใส่เฉพาะถ้ามีค่าส่งมา — ห้ามส่ง property ว่างเข้า HubSpot
+  ...(location && isValidLocation(location) ? { [propName('location')]: location } : {}),
+  ...(service && isValidService(service) ? { [propName('service_interest')]: service } : {}),
 }
 ```
 
-- validate ฝั่ง server ซ้ำกับฝั่ง client เสมอ (email regex, เบอร์ ≥9 หลัก, location/service/sku ต้องอยู่ใน catalog)
+- validate ฝั่ง server ซ้ำกับฝั่ง client เสมอ: `name` ≥2 ตัวอักษร · email regex · เบอร์ ≥9 หลัก ·
+  `sku` ต้องอยู่ใน catalog (ถ้ามี `location`/`service` ส่งมา ก็ต้องอยู่ใน catalog ด้วย)
 - ตอบ `400` + `{ errors: { field: 'ข้อความไทย' } }` เพื่อให้ฟอร์มโชว์ทีละช่อง
 - error จาก HubSpot: `console.error` ได้ แต่ **ตอบ client เป็นข้อความกลางๆ** ห้ามหลุดรายละเอียดระบบ
 
@@ -254,7 +259,8 @@ img.missing::after { content: attr(data-label); position:absolute; inset:0; disp
   align-items:center; justify-content:center; font-size:.8rem; color:#5C6570; }
 ```
 
-- ฟอร์ม: 5 ช่อง ตาม `lead-form.md` · validate ตอน blur · ปุ่ม disable ตอนส่ง (กัน deal ซ้ำ)
+- ฟอร์ม: **ชื่อ / อีเมล / เบอร์** + `<input type="hidden" name="sku">` ตาม `lead-form.md`
+  · validate ตอน blur · ปุ่ม disable ตอนส่ง (กัน deal ซ้ำ)
 - ลำดับตอน submit: `POST /api/lead` → ยิง `generate_lead`/`Lead` → `POST /api/checkout` →
   `sessionStorage` เก็บ offer ไว้ให้หน้า thanks → `location.href = url`
 - ถ้า checkout พลาด **ต้องบอกว่า lead ถูกเก็บไว้แล้ว** (เพราะเก็บก่อนจริง)

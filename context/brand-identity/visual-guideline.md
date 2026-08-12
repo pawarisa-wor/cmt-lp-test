@@ -1,7 +1,8 @@
 # Visual Guideline — GLOW SOCIETY
 
 > 🧪 ไฟล์นี้ใส่ **แบรนด์ตัวอย่าง GLOW SOCIETY** (ข้อมูลสมมติ) ไว้ให้แล้ว เพื่อให้ pipeline รันได้ทันที
-> ถ้าจะทำแบรนด์ของตัวเอง: สั่ง skill `create-company-context` — มันจะเขียนทับด้วยหัวข้อเปล่าแล้วสัมภาษณ์คุณใหม่
+> จะทำแบรนด์ของตัวเอง: `cp -r templates/. context/` เพื่อกลับไปเป็นหัวข้อเปล่า แล้วกรอกเอง
+> (หรือบอก Claude ว่า "ช่วยสัมภาษณ์แล้วกรอก context ให้" ก็ได้)
 
 ## Mood ที่ต้องการ
 
@@ -65,5 +66,11 @@
 
 ## Moodboard
 
-- ไฟล์: `context/brand-identity/moodboard.png` (สร้างด้วย skill `create-moodboard`, ratio 9:16)
-- สไตล์ที่แนะนำสำหรับแบรนด์นี้: **A) Flowing** (editorial ซ้อนทับ ดูมีชีวิต) มากกว่า bento grid
+- **`moodboard.png`** — ยังไม่ได้ generate (ต้องมี `KIE_API_KEY` ก่อน)
+  prompt ที่ประกอบเสร็จแล้วอยู่ที่ `moodboard-prompt.txt` ในโฟลเดอร์เดียวกัน
+  สร้างด้วยคำสั่งเดียว:
+  ```bash
+  node scripts/gen-images.mjs --moodboard --dry-run   # ดู prompt ก่อน
+  node scripts/gen-images.mjs --moodboard             # ยิงจริง (9:16, 2K)
+  ```
+- สไตล์ที่เลือกสำหรับแบรนด์นี้: **A) Flowing** (editorial ซ้อนทับ ดูมีชีวิต) มากกว่า bento grid

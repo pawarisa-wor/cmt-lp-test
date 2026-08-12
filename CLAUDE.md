@@ -10,11 +10,11 @@ Repo นี้เป็น **template เปล่า** สำหรับ works
 
 | # | ขั้น | ใช้อะไร | ได้อะไร |
 |---|---|---|---|
-| 1 | Build company context | skill `create-company-context` | `context/*.md` ครบ 5 ไฟล์ |
+| 1 | Build company context | กรอก `templates/` → `context/` **หรือ** copy `context_example/` | `context/{company,clients,offers,voice}.md` |
 | 2 | Product brief (offer + ราคา + sku) | กรอก `context/offers.md` | ราคา/sku ที่ระบบเก็บเงินใช้ได้ |
 | 3 | Setup HubSpot + Stripe | skill `setup-crm` | `catalog.json` + properties/products จริง |
-| 4 | Moodboard + visual direction | skill `create-moodboard` | `moodboard.png` + `visual-guideline.md` ที่ล็อกแล้ว |
-| 5 | Build landing page (5 stops) | skill `generate-salepage` | หน้าเพจ live บน Vercel |
+| 4 | **Create a moodboard** | skill `create-moodboard` | **3 ไฟล์**: `moodboard.png` · `brand-identity/visual-guideline.md` · `voice.md` |
+| 5 | Build landing page (5 stops) | skill `generate-salepage` | หน้าเพจ live บน Vercel — **ต้อง follow brand identity จากขั้น 4** |
 | 6 | Test lead | `node scripts/test-lead.mjs` | Contact + Deal เด้งใน HubSpot จริง |
 
 ถ้าผู้ใช้ขอข้ามขั้น ให้เตือนสั้นๆ ว่าขั้นนั้นเป็น input ของขั้นถัดไป แล้วถามยืนยันก่อนทำ
@@ -24,8 +24,8 @@ Repo นี้เป็น **template เปล่า** สำหรับ works
 1. **อ่าน context ก่อนเขียนอะไรก็ตาม** — `context/company.md`, `clients.md`, `offers.md`, `voice.md`,
    `brand-identity/visual-guideline.md`
    ตอนนี้ `context/` ใส่แบรนด์ตัวอย่าง **GLOW SOCIETY** (ข้อมูลสมมติ) ไว้ให้แล้ว
-   ถ้าผู้เรียนจะทำแบรนด์ตัวเอง ให้ skill `create-company-context` เขียนทับด้วยหัวข้อเปล่าจาก
-   `.claude/skills/create-company-context/templates/`
+   ถ้าผู้เรียนจะทำแบรนด์ตัวเอง: `cp -r templates/. context/` (หัวข้อเปล่า) แล้วกรอก —
+   ไม่มี skill สำหรับขั้นนี้ กรอก md ธรรมดา หรือให้ Claude ช่วยสัมภาษณ์แล้วเขียนให้ก็ได้
 2. **ห้าม hardcode API key / token ในไฟล์ใดๆ** — อ่านจาก `.env` เท่านั้น
    ห้าม echo ค่า key ออกมาใน terminal หรือใส่ใน commit message
 3. **ห้าม commit `.env`** (`.gitignore` กันไว้แล้ว) — ถ้าเห็นว่า key หลุดเข้า git ให้หยุดและแจ้งผู้ใช้ทันที
@@ -35,13 +35,16 @@ Repo นี้เป็น **template เปล่า** สำหรับ works
    (`api/checkout.js` ต้อง lookup ราคาจาก sku เอง)
 6. **Stripe ต้องเป็น test key** (`sk_test_…`) เท่านั้นในคลาส
 7. **copy บนหน้าเพจเป็นภาษาไทย** โทนตาม `voice.md` — เอกสารเป็นไทย, `SKILL.md` เป็นอังกฤษ
+8. **หน้าเพจต้องยึด brand identity จากขั้น 4** — palette/ฟอนต์/แนวภาพจาก `visual-guideline.md`
+   และโทน copy จาก `voice.md` ห้ามคิดสีหรือฟอนต์ใหม่เอง
+9. **ฟอร์ม lead เก็บแค่ ชื่อ / อีเมล / เบอร์โทร** แล้วพาไปชำระเงินทันที
+   จ่ายสำเร็จ → webhook อัปเดต deal stage เป็นชำระแล้ว
 
 ## Skills
 
 | Skill | ใช้เมื่อไหร่ |
 |---|---|
-| `create-company-context` | ขั้น 1 — สัมภาษณ์แบรนด์แล้วเขียนไฟล์ใน `context/` |
-| `create-moodboard` | ขั้น 4 — visual direction + moodboard.png (9:16) |
+| `create-moodboard` | ขั้น 4 — moodboard.png (9:16) + visual-guideline.md + voice.md |
 | `setup-crm` | ขั้น 3 — `offers.md` → `catalog.json` → config HubSpot + Stripe |
 | `generate-salepage` | ขั้น 5 — offer → wireframe → copy → assets → build+wire → deploy → CRO |
 
@@ -50,6 +53,7 @@ Repo นี้เป็น **template เปล่า** สำหรับ works
 ## โครง repo
 
 ```
+templates/          ← หัวข้อเปล่าสำหรับกรอกแบรนด์ตัวเอง (cp -r templates/. context/)
 context/            ← ข้อมูลแบรนด์ที่ใช้งานจริง (ตอนนี้ใส่ GLOW SOCIETY ตัวอย่างไว้)
 context_example/    ← ตัวอย่างอ้างอิง (อย่าแก้ — ใช้เทียบตอนผู้เรียนตอบไม่ออก)
 scripts/            ← node scripts ทุกตัวรับ --dry-run

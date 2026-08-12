@@ -1,19 +1,27 @@
 ---
 name: create-moodboard
-description: Generate a brand moodboard image from the project's context files, then write the visual direction back into the brand guideline. Use when the user says "สร้าง moodboard", "moodboard", "อยากเห็นภาพแบรนด์", "visual direction", "create moodboard", or right before building a salepage when brand-identity/visual-guideline.md has no locked visual direction yet.
+description: Build the brand identity from the project's context — a moodboard image plus the written rules that come from it (visual guideline and voice). Use when the user says "สร้าง moodboard", "moodboard", "อยากเห็นภาพแบรนด์", "visual direction", "brand identity", "create moodboard", or before building a salepage when context/brand-identity/ has no moodboard and visual-guideline yet.
 metadata:
   version: 1.0.0
 ---
 
 # Create Moodboard
 
-Turn brand context into one scroll-stopping moodboard image, then lock the visual direction so
-`generate-salepage` produces a page that looks like the brand instead of like a template.
+Turn brand context into one scroll-stopping moodboard image, then turn that image into written rules
+so `generate-salepage` produces a page that looks like the brand instead of like a template.
 
-**Outputs:**
-- `context/brand-identity/moodboard.png` (9:16)
-- `context/brand-identity/moodboard-prompt.txt` — the exact prompt used, so it can be regenerated
-- updated `context/brand-identity/visual-guideline.md` (palette + typography + photography locked)
+**Outputs — ทั้ง 3 ไฟล์ต้องได้ครบ ไม่ใช่แค่รูป:**
+
+| ไฟล์ | คืออะไร |
+|---|---|
+| `context/brand-identity/moodboard.png` | ภาพ moodboard (9:16) |
+| `context/brand-identity/visual-guideline.md` | กฎที่ถอดจากภาพ — palette + typography + photography + UI |
+| `context/voice.md` | โทนเสียงของแบรนด์ที่สอดคล้องกับ visual direction |
+
+พร้อม `context/brand-identity/moodboard-prompt.txt` (prompt ที่ใช้ เก็บไว้ regenerate ได้)
+
+**ภาพเปล่าๆ ไม่มีประโยชน์กับขั้นถัดไป** — `generate-salepage` อ่านไฟล์ `.md` ไม่ได้อ่านรูป
+ถ้าไม่เขียน 2 ไฟล์นั้น หน้าเพจจะออกมาเป็น template กลางๆ
 
 ---
 
@@ -91,21 +99,43 @@ Show the image and offer concrete levers (not "อยากแก้อะไร
 
 Regenerate only what's needed — edit the prompt file, then rerun with `--moodboard`.
 
-## Step 6 — Lock the direction back into the guideline (do not skip)
+## Step 6 — Write `visual-guideline.md` (do not skip)
 
-The moodboard is worthless to the next skill unless it becomes rules. Update
-`context/brand-identity/visual-guideline.md` with what the approved image actually shows:
+The moodboard is worthless to the next skill unless it becomes rules. Write
+`context/brand-identity/visual-guideline.md` describing what the **approved image actually shows**
+(ไม่ใช่สิ่งที่ตั้งใจให้เป็น — ถอดจากภาพจริง):
 
-- **Palette**: 5–8 HEX with roles (primary / accent / ink / surface / surface-tint)
-- **Typography**: headline + body font names — must be **Thai-capable and characterful**
-  (e.g. Bai Jamjuree, Anuphan, IBM Plex Sans Thai, Noto Serif Thai).
-  **Never** Inter / Roboto / Arial / Helvetica / system-ui / Sarabun as the primary font.
-- **Photography direction**: subject, lighting, number of people per shot, emotion, what to avoid
-- **UI**: radius, shadow, spacing rhythm, section divider style, texture
-- **Tone label** from the 11 directions in `../generate-salepage/references/design-standards.md`
+- **Mood** 3–5 คำ + **tone label** จาก 11 ทิศทางใน
+  `../generate-salepage/references/design-standards.md` + theme (light/dark) พร้อมเหตุผล 1 บรรทัด
+- **Palette**: 5–8 HEX พร้อมบทบาท (primary / accent / ink / ink-muted / surface / surface-tint)
+  และระบุ "คู่สีที่เป็นลายเซ็นแบรนด์" ถ้ามี
+- **Typography**: headline + body — ต้องเป็นฟอนต์ **ที่รองรับภาษาไทยและมีคาแรกเตอร์**
+  (เช่น Bai Jamjuree, Anuphan, IBM Plex Sans Thai, Noto Serif Thai, Mitr)
+  **ห้าม** Inter / Roboto / Arial / Helvetica / system-ui / Sarabun เป็นฟอนต์หลัก
+- **Photography direction**: ใคร (เชื้อชาติ/อายุ/กี่คนต่อรูป) · แสง · อารมณ์ · สไตล์
+- **ลักษณะรูปที่ห้ามใช้** — ข้อนี้สำคัญที่สุดสำหรับ assets prep (กันภาพผิดแบรนด์)
+- **UI**: radius, shadow, spacing rhythm, section divider, texture
+- อ้างอิงไฟล์ moodboard.png ไว้ท้ายไฟล์
 
-> **STOP** — tell the user the visual direction is locked, and the next step is
-> skill `generate-salepage`.
+## Step 7 — Write `context/voice.md` ให้สอดคล้องกับ visual direction
+
+visual กับ voice ต้องมาจากทิศทางเดียวกัน — แบรนด์ที่ภาพสดใสวัยรุ่นแต่ copy เขียนเป็นราชการ คือแบรนด์ที่พัง
+
+อ่าน `context/company.md` + `clients.md` แล้วเขียน (หรืออัปเดตถ้ามีอยู่แล้ว) `context/voice.md`:
+
+- **บุคลิกแบรนด์** 3–5 คำ ที่ต่อเนื่องจาก tone ของ moodboard
+- **เรียกลูกค้าว่า / เรียกตัวเองว่า** (ระบุคำที่ห้ามใช้ เช่น "ท่าน", "ทางเรา")
+- **ระดับภาษา** — ทางการ / กึ่งทางการ / เพื่อนคุยกัน / กวนๆ (เลือก 1)
+- **คำที่ใช้บ่อย** และ **คำที่ห้ามใช้เด็ดขาด** — รวมคำที่เสี่ยงผิดกฎโฆษณา
+  (เคลมสุขภาพ/การแพทย์, เคลมผลลัพธ์รูปร่าง, body shaming) ถ้าธุรกิจอยู่ในหมวดนั้น
+- **ตัวอย่างประโยคที่ "ใช่เลย"** 1–2 ประโยค และ **"ไม่ใช่แบรนด์เรา"** 1–2 ประโยค
+- **กฎการเขียน**: ความยาวประโยค · emoji ได้ไหม · คำอังกฤษปนได้ไหม · **CTA พูดว่าอะไร**
+
+ถ้าผู้ใช้มีโพสต์/แคปชั่นเดิมอยู่ ขอมา 2–3 ชิ้นแล้วสกัด voice จากของจริงจะแม่นกว่าเดา
+ถ้า `voice.md` มีเนื้อหาอยู่แล้ว **ห้ามเขียนทับเงียบๆ** — เสนอส่วนที่จะแก้แล้วขอ confirm
+
+> **STOP** — สรุปว่าได้ครบ 3 ไฟล์ (moodboard.png + visual-guideline.md + voice.md)
+> แล้วบอกว่าขั้นต่อไปคือ skill `generate-salepage` ซึ่งจะยึด 3 ไฟล์นี้เป็นกรอบ
 
 ---
 

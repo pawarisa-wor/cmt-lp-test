@@ -1,0 +1,26 @@
+# secrets — ห้ามหลุดเข้า git เด็ดขาด
+.env
+.env.*
+!.env.example
+*.env
+!example.env
+
+# node
+node_modules/
+npm-debug.log*
+package-lock.json
+
+# vercel
+.vercel/
+.vercel
+
+# generated assets (gen ใหม่ได้จาก assets-plan.md เสมอ)
+workspace/*/public/assets/generated/
+context/brand-identity/moodboard.png
+
+# os / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp

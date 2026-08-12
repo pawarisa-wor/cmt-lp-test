@@ -45,7 +45,7 @@ Copywriting → Assets prep → Create landing page with HubSpot connection → 
 
 | ต้องมี | ได้จาก | ถ้ายังไม่มี |
 |---|---|---|
-| `context/{company,clients,offers}.md` มีข้อมูลจริง | ผู้ใช้กรอกจาก `templates/` หรือ copy `context_example/` | หยุด — ขั้นถัดไปจะเดาข้อมูลแบรนด์เอง |
+| `context/{company,clients,offers}.md` มีข้อมูลจริง | ผู้ใช้กรอกเอง หรือ `cp -r context_example/. context/` | หยุด — ขั้นถัดไปจะเดาข้อมูลแบรนด์เอง |
 | **`context/brand-identity/moodboard.png` + `visual-guideline.md` + `context/voice.md`** | skill `create-moodboard` | **หยุดแล้วเรียก `create-moodboard` ก่อน** |
 | `catalog.json` (offers/ราคา/sku) | skill `setup-crm` | ทำ Stop 1–4 ได้ แต่ **Stop 5 ต้องมี** |
 
@@ -71,8 +71,9 @@ template folder มีแค่ `technical-setup.md` + `assets-plan.md` (โค�
 1. Read **all** of: `context/company.md`, `clients.md`, `offers.md`, `voice.md`,
    `brand-identity/visual-guideline.md`, plus this project's `technical-setup.md`
    (และ `catalog.json` ถ้ามีแล้ว).
-   ถ้า `context/` ว่าง → หยุด แล้วบอกให้กรอกจาก `templates/` ก่อน (หรือเสนอสัมภาษณ์แล้วกรอกให้)
-   ถ้าอยากลองเร็วๆ ด้วยแบรนด์ตัวอย่าง: `cp -r context_example/. context/` แล้วบอกผู้ใช้ให้ชัด
+   `context/` มาเป็นหัวข้อเปล่า — ถ้ายังไม่มีใครกรอก ให้หยุดแล้วเสนอ 2 ทาง:
+   (ก) สัมภาษณ์แล้วกรอกให้ · (ข) `cp -r context_example/. context/` ใช้แบรนด์ตัวอย่าง GLOW SOCIETY
+   ถ้าเลือก (ข) ต้องบอกผู้ใช้ให้ชัดว่าหน้าเพจจะเป็นของแบรนด์สมมติ
 2. Confirm the two things that decide everything else:
    - **เป้าหมายของหน้านี้** (default: เก็บ lead → ขาย hero offer)
    - **customer journey** (default: FB/IG Ad → salepage → lead form → Stripe checkout → thanks)
@@ -127,8 +128,8 @@ Read `references/copywriting.md` and `references/lead-form.md`.
 - Hero must answer in 5 seconds: นี่คืออะไร · ฉันได้อะไร · ต้องทำอะไรต่อ
 - FAQ = objections from `clients.md`, answered honestly
 - Include image references and every data point inline — Stop 5 builds from this file only
-- Specify the **lead form fields** (keep to 5: ชื่อ, email, เบอร์, สาขา, แพ็กเกจ) + button copy
-  + inline error messages in Thai + the thank-you state
+- Specify the **lead form**: 3 ช่องเท่านั้น (**ชื่อ · อีเมล · เบอร์โทร**) + `sku` เป็น hidden field
+  จากการ์ดราคาที่กดมา + ข้อความปุ่ม + error message ไทยทีละช่อง + state หลังส่งสำเร็จ
 
 Save `copywriting.md`.
 

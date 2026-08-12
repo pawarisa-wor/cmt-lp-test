@@ -37,7 +37,7 @@ npm i -g vercel
 | เวลา | ขั้น | พิมพ์อะไรใน Claude Code |
 |---|---|---|
 | 0:00–0:20 | เช็ค `.env` + อธิบาย funnel และโครงรีโป | — |
-| 0:20–0:45 | **1. Build company context** | กรอก `context/*.md` (มี `templates/` เปล่า + `context_example/` ให้ copy) |
+| 0:20–0:45 | **1. Build company context** | กรอก `context/*.md` (มีหัวข้อให้) หรือ `cp -r context_example/. context/` |
 | 0:45–1:05 | **2. Product brief** — offer, ราคา, sku, testimonials | กรอก `context/offers.md` |
 | 1:05–1:25 | **3. Setup HubSpot + Stripe** | `ใช้ skill setup-crm` |
 | 1:25–1:45 | **4. Create a moodboard** (ได้ moodboard.png + visual-guideline.md + voice.md) | `ใช้ skill create-moodboard` |
@@ -52,16 +52,15 @@ npm i -g vercel
 ## 2. โครง repo
 
 ```
-templates/                  ← หัวข้อเปล่า (company/clients/offers/voice + brand-identity)
-                              ไม่อยากกรอก? `cp -r context_example/. context/` ใช้ตัวอย่างเลย
+context/                    ← **หัวข้อเปล่า** — ผู้เรียนกรอกแบรนด์ตัวเองที่นี่
+  company.md  clients.md  offers.md  voice.md
+  brand-identity/            ว่างไว้ — create-moodboard เติม moodboard.png +
+                             visual-guideline.md ให้ในขั้น 4
 
-context/                    ← ข้อมูลแบรนด์ที่ใช้งานจริง
+context_example/            ← ตัวอย่างเขียนครบ: GLOW SOCIETY (wellness social club BKK)
   company.md  clients.md  offers.md  voice.md
   brand-identity/visual-guideline.md  moodboard-prompt.txt
-  ▸ ตอนนี้ใส่แบรนด์ตัวอย่าง GLOW SOCIETY (wellness social club) ไว้ให้แล้ว
-    เพื่อให้ทดลองรันได้ทันที — จะทำแบรนด์ตัวเอง: `cp -r templates/. context/` แล้วกรอก
-
-context_example/            ← ตัวอย่างอ้างอิง (ไม่ต้องแก้)
+  ▸ ไม่อยากกรอกเอง? `cp -r context_example/. context/` แล้วทำ workshop ต่อได้เลย
 
 .claude/skills/
   create-moodboard/         (+ references/ = prompt 2 สไตล์: flowing / bento grid)
@@ -100,7 +99,7 @@ cp -r "workspace/salepage_[PROJECT]" workspace/salepage_myproject
 
 ```
 อ่าน CLAUDE.md แล้วช่วยสัมภาษณ์ผมเพื่อกรอก context/ ของแบรนด์ผม
-(ใช้หัวข้อจาก templates/) จากนั้นทำ moodboard แล้วทำ salepage ใน workspace/salepage_myproject
+จากนั้นทำ moodboard แล้วทำ salepage ใน workspace/salepage_myproject
 ```
 
 ---

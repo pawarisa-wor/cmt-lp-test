@@ -53,7 +53,7 @@ cro-report.md           ← Stop 5 (ท้ายสุด)
 
 ## ลำดับที่ต้องทำ (ห้ามข้าม)
 
-1. `context/` ต้องมีข้อมูลแบรนด์ก่อน → กรอกจาก `templates/` หรือ copy `context_example/`
+1. `context/` ต้องมีข้อมูลแบรนด์ก่อน → กรอกหัวข้อใน `context/*.md` หรือ `cp -r context_example/. context/`
 2. brand identity → skill `create-moodboard` (ได้ moodboard.png + visual-guideline.md + voice.md)
 3. HubSpot + Stripe → skill `setup-crm` (สร้าง `catalog.json` ที่นี่)
 4. หน้าเพจ → skill `generate-salepage` (5 stops)

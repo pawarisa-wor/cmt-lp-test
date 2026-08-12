@@ -10,7 +10,7 @@ Repo นี้เป็น **template เปล่า** สำหรับ works
 
 | # | ขั้น | ใช้อะไร | ได้อะไร |
 |---|---|---|---|
-| 1 | Build company context | กรอก `templates/` → `context/` **หรือ** copy `context_example/` | `context/{company,clients,offers,voice}.md` |
+| 1 | Build company context | กรอก `context/*.md` (มีหัวข้อให้) **หรือ** `cp -r context_example/. context/` | `context/{company,clients,offers,voice}.md` |
 | 2 | Product brief (offer + ราคา + sku) | กรอก `context/offers.md` | ราคา/sku ที่ระบบเก็บเงินใช้ได้ |
 | 3 | Setup HubSpot + Stripe | skill `setup-crm` | `catalog.json` + properties/products จริง |
 | 4 | **Create a moodboard** | skill `create-moodboard` | **3 ไฟล์**: `moodboard.png` · `brand-identity/visual-guideline.md` · `voice.md` |
@@ -23,9 +23,10 @@ Repo นี้เป็น **template เปล่า** สำหรับ works
 
 1. **อ่าน context ก่อนเขียนอะไรก็ตาม** — `context/company.md`, `clients.md`, `offers.md`, `voice.md`,
    `brand-identity/visual-guideline.md`
-   ตอนนี้ `context/` ใส่แบรนด์ตัวอย่าง **GLOW SOCIETY** (ข้อมูลสมมติ) ไว้ให้แล้ว
-   ถ้าผู้เรียนจะทำแบรนด์ตัวเอง: `cp -r templates/. context/` (หัวข้อเปล่า) แล้วกรอก —
-   ไม่มี skill สำหรับขั้นนี้ กรอก md ธรรมดา หรือให้ Claude ช่วยสัมภาษณ์แล้วเขียนให้ก็ได้
+   **`context/` มาเป็นหัวข้อเปล่า** — ผู้เรียนกรอกแบรนด์ตัวเอง (กรอก md ธรรมดา
+   หรือให้ Claude ช่วยสัมภาษณ์แล้วเขียนให้ก็ได้ ไม่มี skill สำหรับขั้นนี้)
+   ถ้า `context/` ยังว่างและผู้ใช้อยากลองเร็วๆ ให้เสนอ `cp -r context_example/. context/`
+   (แบรนด์ตัวอย่าง GLOW SOCIETY — ข้อมูลสมมติ) แล้ว **บอกผู้ใช้ให้ชัดว่ากำลังใช้ตัวอย่าง**
 2. **ห้าม hardcode API key / token ในไฟล์ใดๆ** — อ่านจาก `.env` เท่านั้น
    ห้าม echo ค่า key ออกมาใน terminal หรือใส่ใน commit message
 3. **ห้าม commit `.env`** (`.gitignore` กันไว้แล้ว) — ถ้าเห็นว่า key หลุดเข้า git ให้หยุดและแจ้งผู้ใช้ทันที
@@ -53,9 +54,9 @@ Repo นี้เป็น **template เปล่า** สำหรับ works
 ## โครง repo
 
 ```
-templates/          ← หัวข้อเปล่าสำหรับกรอกแบรนด์ตัวเอง (cp -r templates/. context/)
-context/            ← ข้อมูลแบรนด์ที่ใช้งานจริง (ตอนนี้ใส่ GLOW SOCIETY ตัวอย่างไว้)
-context_example/    ← ตัวอย่างอ้างอิง (อย่าแก้ — ใช้เทียบตอนผู้เรียนตอบไม่ออก)
+context/            ← **หัวข้อเปล่า** ให้ผู้เรียนกรอกแบรนด์ตัวเอง
+                      brand-identity/ ว่างไว้ — skill create-moodboard เติมให้ในขั้น 4
+context_example/    ← ตัวอย่างเขียนครบ GLOW SOCIETY (อย่าแก้ — copy ไปใช้ / ใช้เทียบได้)
 scripts/            ← node scripts ทุกตัวรับ --dry-run
 workspace/
   salepage_[PROJECT]/     ← template เปล่า: technical-setup.md + assets-plan.md

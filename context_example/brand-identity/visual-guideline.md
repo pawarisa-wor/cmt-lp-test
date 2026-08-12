@@ -65,10 +65,18 @@
 ## Moodboard
 
 - **`moodboard.png`** — ยังไม่ได้ generate (ต้องมี `KIE_API_KEY` ก่อน)
-  prompt ที่ประกอบเสร็จแล้วอยู่ที่ `moodboard-prompt.txt` ในโฟลเดอร์เดียวกัน
-  สร้างด้วยคำสั่งเดียว:
+  prompt ที่ประกอบเสร็จแล้วอยู่ที่ `moodboard-prompt.txt` ในโฟลเดอร์เดียวกัน สร้างได้ 2 ทาง:
+
   ```bash
+  # (ก) ใช้ prompt ของตัวอย่างนี้ตรงๆ
+  node scripts/gen-images.mjs --moodboard \
+    --prompt-file context_example/brand-identity/moodboard-prompt.txt --dry-run
+
+  # (ข) copy ตัวอย่างทั้งชุดไปเป็น context ของเราก่อน แล้วรันสั้นๆ
+  cp -r context_example/. context/
   node scripts/gen-images.mjs --moodboard --dry-run   # ดู prompt ก่อน
   node scripts/gen-images.mjs --moodboard             # ยิงจริง (9:16, 2K)
   ```
+
+  ตัดคำว่า `--dry-run` ออกเมื่อพอใจกับ prompt แล้ว (💰 คิดเงินต่อรูป)
 - สไตล์ที่เลือกสำหรับแบรนด์นี้: **A) Flowing** (editorial ซ้อนทับ ดูมีชีวิต) มากกว่า bento grid

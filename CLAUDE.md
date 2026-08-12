@@ -58,11 +58,27 @@ context/            ← **หัวข้อเปล่า** ให้ผู้
                       brand-identity/ ว่างไว้ — skill create-moodboard เติมให้ในขั้น 4
 context_example/    ← ตัวอย่างเขียนครบ GLOW SOCIETY (อย่าแก้ — copy ไปใช้ / ใช้เทียบได้)
 scripts/            ← node scripts ทุกตัวรับ --dry-run
+vercel.json         ← Vercel project อยู่ที่ root (buildCommand + includeFiles)
+package.json        ← dependency: stripe
 workspace/
   salepage_[PROJECT]/     ← template เปล่า: technical-setup.md + assets-plan.md
-                            copy เป็น salepage_[ชื่อโปรเจกต์] แล้วสร้างของจริงในคลาส
+  [slug]/                 ← 1 โฟลเดอร์ = 1 หน้าเพจ · **ชื่อโฟลเดอร์ = URL**
 .env.example        ← ชื่อ key ทั้งหมด (คัดลอกเป็น .env)
 ```
+
+## หลายหน้าใน Vercel deployment เดียว
+
+```
+workspace/page_a/  →  [domain]/page_a
+workspace/page_b/  →  [domain]/page_b
+```
+
+- `scripts/build-site.mjs` ประกอบ `workspace/*/public/` ทุกหน้าลง `public/` ที่ root
+  (Vercel เรียกให้เองตอน build · `public/` เป็นผลผลิต gitignored ห้ามแก้มือ)
+- **deploy ที่ root ของ repo เท่านั้น** — `vercel --prod` (ไม่ใช่ในโฟลเดอร์หน้า)
+- `api/` + `lib/` อยู่ที่ root **แชร์ทุกหน้า** สร้างครั้งเดียวตอนทำหน้าแรก
+- ทุก request ต้องส่ง `page` (slug) ไปด้วย → server เลือก `catalog.json` ของหน้านั้น
+- หน้าที่ 2 ขึ้นไป: ทำแค่ `catalog.json` + `public/` แล้ว deploy ใหม่ หน้าเดิมไม่หาย
 
 ## Conventions
 

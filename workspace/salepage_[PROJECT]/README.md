@@ -5,14 +5,17 @@
 ## เริ่มใช้งาน
 
 ```bash
-cp -r "workspace/salepage_[PROJECT]" workspace/salepage_glow    # ตั้งชื่อตามโปรเจกต์ของคุณ
+cp -r "workspace/salepage_[PROJECT]" workspace/page_a    # ★ ชื่อโฟลเดอร์ = URL ของหน้านี้
 ```
+
+หน้านี้จะอยู่ที่ `https://[your-project].vercel.app/page_a`
+ใช้ได้แค่ `a-z 0-9 - _` · หลายหน้าอยู่ใน deployment เดียวกันได้ (`/page_a`, `/page_b`, …)
 
 แล้วบอก Claude Code:
 
 ```
 อ่าน CLAUDE.md แล้วใช้ skill generate-salepage
-ทำ salepage ใน workspace/salepage_glow จาก context/
+ทำ salepage ใน workspace/page_a จาก context/
 ```
 
 ## มีอะไรให้แล้ว (2 ไฟล์)
@@ -24,6 +27,7 @@ cp -r "workspace/salepage_[PROJECT]" workspace/salepage_glow    # ตั้ง�
 
 ## อะไรจะถูกสร้างในคลาส (ไม่ต้องเตรียมมาก่อน)
 
+**ในโฟลเดอร์หน้านี้:**
 ```
 _progress.md            ← tracker ว่าทำถึง stop ไหน
 catalog.json            ← offers/ราคา/sku ที่แปลงมาจาก context/offers.md (skill setup-crm สร้าง)
@@ -37,14 +41,15 @@ public/
   thanks.html           ← Stop 5
   config.js             ← Stop 5 (GA4 ID / Pixel ID)
   assets/               ← รูปที่ generate + manifest.md
-api/
-  lead.js               ← Stop 5 — ฟอร์ม → HubSpot Contact + Deal
-  checkout.js           ← Stop 5 — sku → Stripe Checkout Session
-  stripe-webhook.js     ← Stop 5 — จ่ายสำเร็จ → ปิด Deal เป็น closedwon
-lib/
-  catalog.js  hubspot.js
-package.json  vercel.json
 cro-report.md           ← Stop 5 (ท้ายสุด)
+```
+
+**ที่ root ของ repo (แชร์ทุกหน้า — สร้างครั้งเดียวตอนทำหน้าแรก):**
+```
+api/lead.js  api/checkout.js  api/stripe-webhook.js
+lib/pages.js  lib/catalog.js  lib/hubspot.js
+public/                 ← ผลผลิตของ scripts/build-site.mjs (gitignored)
+vercel.json  package.json   ← มีให้แล้ว
 ```
 
 > โครง + code pattern ของไฟล์พวกนี้อยู่ใน

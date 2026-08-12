@@ -53,16 +53,40 @@ export function parseArgs(argv = process.argv.slice(2)) {
   return out;
 }
 
-/** ชื่อโฟลเดอร์ template ที่ไม่ใช่ project จริง */
+/** ชื่อโฟลเดอร์ template ที่ไม่ใช่ page จริง */
 const TEMPLATE_DIR = 'salepage_[PROJECT]';
 
-/** list project ที่มีอยู่ใน workspace/ (ไม่รวม template) */
+/**
+ * list page ที่มีอยู่ใน workspace/
+ * **ชื่อโฟลเดอร์ = URL slug** เช่น workspace/page_a → [domain]/page_a
+ * ข้าม template, โฟลเดอร์ที่ขึ้นต้นด้วย _ หรือ . และ node_modules
+ */
 export function listProjects() {
   const ws = join(REPO_ROOT, 'workspace');
   if (!existsSync(ws)) return [];
   return readdirSync(ws, { withFileTypes: true })
-    .filter((d) => d.isDirectory() && d.name.startsWith('salepage_') && d.name !== TEMPLATE_DIR)
-    .map((d) => d.name);
+    .filter(
+      (d) =>
+        d.isDirectory() &&
+        d.name !== TEMPLATE_DIR &&
+        d.name !== 'node_modules' &&
+        !d.name.startsWith('_') &&
+        !d.name.startsWith('.'),
+    )
+    .map((d) => d.name)
+    .sort();
+}
+
+/** ตรวจว่าชื่อโฟลเดอร์ใช้เป็น URL segment ได้ (a-z 0-9 - _ เท่านั้น) */
+export function assertValidSlug(name) {
+  if (!/^[a-z0-9][a-z0-9_-]*$/.test(name)) {
+    fail(
+      `ชื่อโฟลเดอร์ "${name}" ใช้เป็น URL ไม่ได้\n` +
+        'ชื่อโฟลเดอร์ใน workspace/ = URL slug → ใช้ได้แค่ a-z 0-9 - _ และต้องเริ่มด้วยตัวอักษร/เลข\n' +
+        'เช่น page_a, glow, ice-bath',
+    );
+  }
+  return name;
 }
 
 /**
@@ -82,12 +106,13 @@ export function projectDir(args) {
 
   if (found.length === 0) {
     fail(
-      'ยังไม่มี salepage project ใน workspace/\n' +
-        `สร้างก่อนด้วย:  cp -r "workspace/${TEMPLATE_DIR}" workspace/salepage_[ชื่อโปรเจกต์]\n` +
+      'ยังไม่มีหน้าเพจใน workspace/\n' +
+        `สร้างก่อนด้วย:  cp -r "workspace/${TEMPLATE_DIR}" workspace/[slug]\n` +
+        'ชื่อโฟลเดอร์คือ URL ของหน้านั้น (เช่น page_a → [domain]/page_a)\n' +
         '(หรือให้ skill generate-salepage ทำให้ใน Stop 0)',
     );
   }
-  fail(`มีหลาย project — ระบุด้วย --project [ชื่อ]\nที่มีอยู่: ${found.join(', ')}`);
+  fail(`มีหลายหน้า — ระบุด้วย --project [slug]\nที่มีอยู่: ${found.join(', ')}`);
 }
 
 export function readCatalog(args) {

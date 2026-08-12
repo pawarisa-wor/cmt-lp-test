@@ -78,10 +78,15 @@ scripts/                    ← ทุกตัวรับ --dry-run
   optimize-images.mjs ย่อ/บีบรูปให้ผ่านเป้าน้ำหนัก
   test-lead.mjs       ยิง lead ปลอมเข้าระบบแล้วเช็คว่าเข้า HubSpot จริง
 
+  build-site.mjs      ประกอบทุกหน้าใน workspace/ ลง public/ สำหรับ deploy
+
+vercel.json                 ← Vercel project อยู่ที่ root · package.json (stripe)
+
 workspace/
   salepage_[PROJECT]/       ← template เปล่า มี 2 ไฟล์
     technical-setup.md      ★ tools + วิธี setup ทีละคลิก + spec ที่ AI อ่านเพื่อ config เอง
     assets-plan.md          ★ โครงวางแผนรูป (review ก่อน generate จริง)
+  [slug]/                   ← 1 โฟลเดอร์ = 1 หน้าเพจ (ชื่อโฟลเดอร์ = URL)
 ```
 
 หน้าเพจ (`public/`), API (`api/`), `catalog.json`, `assets.json` **จะถูกสร้างในคลาส** —
@@ -89,17 +94,37 @@ workspace/
 
 ---
 
+## 2b. หลายหน้าใน Vercel deployment เดียว
+
+**ชื่อโฟลเดอร์ใน `workspace/` = URL ของหน้านั้น**
+
+```
+workspace/page_a/   →   https://[project].vercel.app/page_a
+workspace/glow/     →   https://[project].vercel.app/glow
+```
+
+```bash
+node scripts/build-site.mjs --dry-run   # ดูว่ามีหน้าอะไรจะขึ้น
+vercel --prod                           # deploy ที่ root — ทุกหน้าขึ้นพร้อมกัน
+```
+
+- `api/` + `lib/` แชร์ทุกหน้า (สร้างครั้งเดียวตอนทำหน้าแรก) — แต่ละหน้ามี `catalog.json` ของตัวเอง
+- ตั้ง env และ Stripe webhook **ครั้งเดียว** ใช้ได้ทุกหน้า
+- เพิ่มหน้าใหม่ = สร้างโฟลเดอร์ใหม่ + `vercel --prod` · หน้าเดิมไม่หาย
+
+---
+
 ## 3. เริ่มทำโปรเจกต์
 
 ```bash
-cp -r "workspace/salepage_[PROJECT]" workspace/salepage_myproject
+cp -r "workspace/salepage_[PROJECT]" workspace/page_a     # ชื่อโฟลเดอร์ = URL → /page_a
 ```
 
 แล้วบอก Claude Code:
 
 ```
 อ่าน CLAUDE.md แล้วช่วยสัมภาษณ์ผมเพื่อกรอก context/ ของแบรนด์ผม
-จากนั้นทำ moodboard แล้วทำ salepage ใน workspace/salepage_myproject
+จากนั้นทำ moodboard แล้วทำ salepage ใน workspace/page_a
 ```
 
 ---
@@ -107,9 +132,8 @@ cp -r "workspace/salepage_[PROJECT]" workspace/salepage_myproject
 ## 4. รัน local (หลังมีหน้าเพจแล้ว)
 
 ```bash
-cd workspace/salepage_myproject
-npm install
-vercel dev                 # http://localhost:3000
+npm install                # ที่ root ของ repo
+vercel dev                 # http://localhost:3000/[slug]
 ```
 
 บัตรทดสอบ Stripe: `4242 4242 4242 4242` · วันหมดอายุอนาคตอะไรก็ได้ · CVC `123`

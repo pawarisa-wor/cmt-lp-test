@@ -32,7 +32,7 @@ Copywriting → Assets prep → Create landing page with HubSpot connection → 
 
 | Stop | Workshop step | Deliverable |
 |---|---|---|
-| 0 | เตรียม project folder | `workspace/salepage_[ชื่อโปรเจกต์]/` + `_progress.md` |
+| 0 | เตรียม page folder (**ชื่อโฟลเดอร์ = URL**) | `workspace/[slug]/` + `_progress.md` |
 | 1 | **Offer Building** | `offer-building.md` |
 | 2 | Design guide + **ASCII wireframe** | `design-guide.md` + `wireframe.md` |
 | 3 | **Copywriting** (ไทย) + lead-form spec | `copywriting.md` |
@@ -55,16 +55,22 @@ Copywriting → Assets prep → Create landing page with HubSpot connection → 
 
 ---
 
-## Stop 0 — เตรียม project folder
+## Stop 0 — เตรียม page folder
+
+**ชื่อโฟลเดอร์ = URL ของหน้านั้น** (หลายหน้าอยู่ใน Vercel deployment เดียวกันได้)
 
 ```bash
-cp -r "workspace/salepage_[PROJECT]" workspace/salepage_[ชื่อโปรเจกต์]
+cp -r "workspace/salepage_[PROJECT]" workspace/page_a     # → [domain]/page_a
 ```
 
-template folder มีแค่ `technical-setup.md` + `assets-plan.md` (โครงเปล่า) — ที่เหลือเราสร้างกันตาม stop
-สร้าง `_progress.md` แล้วบันทึกว่ากำลังทำ project ไหน ใช้ context อะไร
+- ถามผู้ใช้ก่อนว่าอยากให้ URL เป็นอะไร แล้วตั้งชื่อโฟลเดอร์ตามนั้น
+- ใช้ได้แค่ `a-z 0-9 - _` และต้องเริ่มด้วยตัวอักษร/ตัวเลข (เป็น URL segment)
+- template folder มีแค่ `technical-setup.md` + `assets-plan.md` (โครงเปล่า) — ที่เหลือสร้างตาม stop
+- สร้าง `_progress.md` บันทึกว่าทำหน้าไหน ใช้ context อะไร
+- เช็คว่ามีหน้าอื่นอยู่แล้วไหม (`ls workspace/`) — ถ้ามี `api/` + `lib/` ที่ root แล้ว
+  Stop 5 จะสั้นลงมาก เพราะ plumbing ใช้ร่วมกัน
 
-> **STOP** — บอกชื่อโฟลเดอร์ที่สร้าง แล้วถามว่าเริ่ม Stop 1 เลยไหม
+> **STOP** — บอก slug/URL ที่จะได้ แล้วถามว่าเริ่ม Stop 1 เลยไหม
 
 ## Stop 1 — Context + Offer building
 
@@ -198,12 +204,16 @@ Read `references/project-scaffold.md` **ก่อน** (มี pattern ที่
 **Tracking** — implement exactly the event table in `references/tracking.md`
 (`generate_lead`/`Lead` after the form succeeds, `purchase`/`Purchase` on thanks, etc.)
 
-**Deploy:**
+**Deploy — ทำที่ root ของ repo ไม่ใช่ในโฟลเดอร์หน้า:**
 ```bash
-cd workspace/salepage_[PROJECT]
-vercel link && vercel env add …   # ทุก key ที่ใช้
-vercel --prod
+node scripts/build-site.mjs --dry-run   # เช็คว่าหน้าเราอยู่ในลิสต์
+npm install
+vercel dev                              # ทดสอบ → localhost:3000/[slug]
+vercel link && vercel env add …         # ทุก key ที่ใช้ (ทำครั้งเดียว ใช้ได้ทุกหน้า)
+vercel --prod                           # → [domain]/[slug]
 ```
+Vercel จะรัน `scripts/build-site.mjs` เองตอน build (ตั้งไว้ใน `vercel.json`) แล้วประกอบ
+`workspace/*/public/` ทุกหน้าลง `public/` — **หน้าอื่นที่มีอยู่แล้วจะไม่หาย**
 
 **CRO check** — run `references/cro-check.md` against the built page, including the
 **button contrast check on every section** (CTA must be the highest-contrast element on the page in

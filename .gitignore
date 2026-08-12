@@ -14,6 +14,10 @@ package-lock.json
 .vercel/
 .vercel
 
+# public/ ที่ root = ผลผลิตของ scripts/build-site.mjs (ประกอบจาก workspace/*/public/)
+# ห้ามสับสนกับ workspace/[slug]/public/ ซึ่งเป็นของจริงที่ต้อง commit
+/public/
+
 # generated assets (gen ใหม่ได้จาก assets-plan.md เสมอ)
 workspace/*/public/assets/generated/
 context/brand-identity/moodboard.png

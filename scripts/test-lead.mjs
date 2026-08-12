@@ -5,10 +5,12 @@
  *   node scripts/test-lead.mjs --dry-run                 ดู payload ที่จะส่ง
  *   node scripts/test-lead.mjs                           ยิงเข้า http://localhost:3000
  *   node scripts/test-lead.mjs --url https://xxx.vercel.app
+ *   node scripts/test-lead.mjs --project page_b          ระบุหน้า (ถ้ามีหลายหน้าใน workspace/)
  *   node scripts/test-lead.mjs --sku GLOW-ALLIN --checkout
  *
- * ต้องรัน `vercel dev` ใน workspace/salepage_glow ไว้ก่อน (ถ้าทดสอบ local)
+ * ต้องรัน `vercel dev` ที่ root ของ repo ไว้ก่อน (ถ้าทดสอบ local)
  */
+import { basename, dirname } from 'node:path';
 import {
   loadEnv, parseArgs, readCatalog, info, ok, warn, fail, c, dryRunBanner,
 } from './lib/util.mjs';
@@ -16,7 +18,7 @@ import {
 loadEnv();
 const args = parseArgs();
 const dry = Boolean(args['dry-run']);
-const { catalog } = readCatalog(args);
+const { path: catalogPath, catalog } = readCatalog(args);
 
 const base = String(args.url || process.env.SITE_URL || 'http://localhost:3000').replace(/\/$/, '');
 const hero = catalog.offers.find((o) => o.hero) || catalog.offers[0];
@@ -24,24 +26,30 @@ const sku = String(args.sku || hero.sku);
 const offer = catalog.offers.find((o) => o.sku === sku);
 if (!offer) fail(`ไม่พบ sku ${sku} ใน catalog.json`);
 
+// slug ของหน้า = ชื่อโฟลเดอร์ใน workspace/ (API ใช้เลือก catalog ของหน้านั้น)
+const page = basename(dirname(catalogPath));
+
 const stamp = Date.now();
 const payload = {
+  page,
   name: args.name || `ทดสอบ ระบบ ${String(stamp).slice(-4)}`,
   email: args.email || `test+${stamp}@example.com`,
   phone: args.phone || '0812345678',
-  location: args.location || catalog.locations[0].id,
-  service: args.service || 'both',
   sku,
+  // optional — ส่งเฉพาะถ้าหน้านั้นมีช่องให้เลือก
+  ...(args.location ? { location: args.location } : {}),
+  ...(args.service ? { service: args.service } : {}),
 };
 
 // ── สรุปก่อนยิง ────────────────────────────────────────────────
 dryRunBanner(dry);
-info(`${c.bold('Test lead')} → ${base}/api/lead\n`);
+info(`${c.bold('Test lead')} → ${base}/api/lead   (page: ${c.bold(page)} → ${base}/${page})\n`);
 info(c.dim(JSON.stringify(payload, null, 2)));
 info(`\nคาดว่าจะได้: Contact ใหม่ + Deal "${catalog.brand} — ${offer.name} — ${payload.name}"`);
 info(`  stage: ${catalog.hubspot.stageOnLead} · amount: ${offer.price} ${catalog.currency}`);
 info(`  ${catalog.propertyPrefix}_package = ${offer.sku}`);
-info(`  ${catalog.propertyPrefix}_location = ${payload.location}`);
+if (payload.location) info(`  ${catalog.propertyPrefix}_location = ${payload.location}`);
+info(`  ${catalog.propertyPrefix}_source_page = ${page}`);
 
 if (dry) {
   info(c.yellow('\ndry run — ไม่มีการยิง request'));
@@ -68,14 +76,15 @@ try {
     }
     fail(
       `/api/lead ตอบ ${res.status}\n${json?.error || text.slice(0, 300)}\n\n` +
-        'เช็ค: vercel dev รันอยู่ไหม · .env มี HUBSPOT_PRIVATE_APP_TOKEN ไหม',
+        'เช็ค: vercel dev รันอยู่ที่ root ของ repo ไหม · .env มี HUBSPOT_PRIVATE_APP_TOKEN ไหม\n' +
+        `เช็คว่า catalog ของหน้า "${page}" อ่านได้: node scripts/build-site.mjs --dry-run`,
     );
   }
 
   lead = json;
   ok(`lead เข้าระบบแล้ว — contactId ${lead.contactId} (${lead.contactCreated ? 'สร้างใหม่' : 'อัปเดตของเดิม'}) · dealId ${lead.dealId}`);
 } catch (err) {
-  fail(`ยิง /api/lead ไม่สำเร็จ — ${err.message}\nรัน vercel dev ใน workspace/salepage_glow ก่อน`);
+  fail(`ยิง /api/lead ไม่สำเร็จ — ${err.message}\nรัน vercel dev ที่ root ของ repo ก่อน`);
 }
 
 // ── verify ใน HubSpot โดยตรง ───────────────────────────────────
@@ -132,7 +141,7 @@ if (args.checkout) {
     const res = await fetch(`${base}/api/checkout`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ sku, dealId: lead.dealId, email: payload.email }),
+      body: JSON.stringify({ page, sku, dealId: lead.dealId, email: payload.email }),
     });
     const json = await res.json();
     if (!res.ok || !json.ok) {

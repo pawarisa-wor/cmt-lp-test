@@ -118,6 +118,7 @@ stripe listen --forward-to localhost:3000/api/stripe-webhook
 **ตอน prod (หลัง deploy):**
 1. Dashboard → **Developers → Webhooks → Add endpoint**
 2. URL: `https://[โปรเจกต์ของคุณ].vercel.app/api/stripe-webhook`
+   (endpoint เดียวใช้ได้ทุกหน้า — `metadata.page` บอก webhook ว่ามาจากหน้าไหน)
 3. Events: เลือก **`checkout.session.completed`** (ตัวเดียวพอ)
 4. กด Add → copy **Signing secret** → `vercel env add STRIPE_WEBHOOK_SECRET production`
 
@@ -145,16 +146,28 @@ stripe listen --forward-to localhost:3000/api/stripe-webhook
 - **Pixabay**: สมัครฟรีที่ [pixabay.com/api/docs](https://pixabay.com/api/docs/) → copy API key
   → `PIXABAY_API_KEY`
 
-## B7. Vercel — deploy
+## B7. Vercel — deploy (หลายหน้า 1 deployment)
 
-```bash
-cd workspace/salepage_[ชื่อโปรเจกต์ของคุณ]
-npm install
-vercel login
-vercel link                    # สร้าง project ใหม่ หรือผูกกับที่มีอยู่
+**สำคัญ: deploy จาก root ของ repo ไม่ใช่จากในโฟลเดอร์หน้า**
+
+หนึ่ง Vercel project เสิร์ฟได้หลายหน้า โดย **ชื่อโฟลเดอร์ใน `workspace/` = URL ของหน้านั้น**
+
+```
+workspace/page_a/   →   https://[project].vercel.app/page_a
+workspace/page_b/   →   https://[project].vercel.app/page_b
 ```
 
-ใส่ env ทุกตัวที่ prod ต้องใช้ (ทำซ้ำทีละตัว):
+`vercel.json` ที่ root ตั้ง `buildCommand: node scripts/build-site.mjs` ไว้แล้ว —
+ตอน build Vercel จะประกอบ `workspace/*/public/` ทุกหน้าลง `public/` เอง
+
+```bash
+cd [root ของ repo]             # ไม่ใช่ workspace/...
+npm install
+vercel login
+vercel link                    # ทำครั้งเดียว ใช้ได้กับทุกหน้า
+```
+
+ใส่ env ทุกตัวที่ prod ต้องใช้ — **ทำครั้งเดียว ทุกหน้าใช้ร่วมกัน**:
 ```bash
 vercel env add HUBSPOT_PRIVATE_APP_TOKEN production
 vercel env add STRIPE_SECRET_KEY production
@@ -163,10 +176,14 @@ vercel env add SITE_URL production
 ```
 
 ```bash
-vercel --prod                  # ได้ URL จริง
+node scripts/build-site.mjs --dry-run   # เช็คว่าเห็นหน้าที่ต้องการครบ
+vercel --prod                           # ได้ URL จริง
 ```
 
 แล้วเอา URL ที่ได้ไป: อัปเดต `SITE_URL`, ตั้ง webhook ใน B3, ใส่ใน GA4 data stream
+
+**เพิ่มหน้าที่ 2 ทีหลัง:** สร้าง `workspace/[slug ใหม่]/` แล้ว `vercel --prod` ใหม่ —
+หน้าเดิมไม่หาย ไม่ต้องตั้ง env ใหม่ ไม่ต้องตั้ง webhook ใหม่
 
 **รัน local:**
 ```bash
@@ -180,6 +197,19 @@ vercel dev                     # http://localhost:3000
 
 > Claude: อ่านส่วนนี้ก่อนเขียน/รันอะไรที่แตะ HubSpot, Stripe, GA4, Pixel หรือ KIE.ai
 > ทุกค่าที่เป็น "ความจริง" เรื่อง offer/ราคา อยู่ใน `catalog.json` ไม่ใช่ในไฟล์นี้
+
+## C0. Multi-page — หลายหน้าใน deployment เดียว
+
+- **ชื่อโฟลเดอร์ใน `workspace/` = URL slug ของหน้านั้น** (`workspace/page_a` → `/page_a`)
+- แต่ละหน้ามี `catalog.json` ของตัวเอง → ราคาและ sku แยกกันได้
+- `api/` + `lib/` อยู่ที่ **root ของ repo** และ **แชร์ทุกหน้า** สร้างครั้งเดียว
+- ทุก request จากหน้าเพจต้องส่ง **`page`** (slug) ไปด้วย → server ใช้เลือก catalog ที่ถูก
+  `lib/pages.js` → `loadCatalogFor(page)` (validate slug ด้วย regex กัน path traversal)
+- `vercel.json` ต้องมี `"includeFiles": "workspace/**/catalog.json"` ไม่งั้น serverless function
+  อ่าน catalog ไม่เจอตอน production
+- ทุกหน้าที่อยู่ใน **HubSpot portal เดียวกันควรใช้ `propertyPrefix` เดียวกัน** — ไม่งั้นจะได้ custom
+  property ชุดซ้ำๆ ต่างกันแค่ prefix · ใช้ `[prefix]_source_page` แยกว่า lead มาจากหน้าไหน
+- Stripe: product/price แยกตาม sku ของแต่ละหน้าได้ปกติ (metadata.sku กันสับสน)
 
 ## C1. HubSpot
 
@@ -296,10 +326,10 @@ vercel dev                     # http://localhost:3000
 {
   mode: offer.billing === 'monthly' ? 'subscription' : 'payment',
   line_items: [{ price: offer.stripePriceId, quantity: 1 }],
-  success_url: `${SITE_URL}/thanks.html?session_id={CHECKOUT_SESSION_ID}`,
-  cancel_url:  `${SITE_URL}/?canceled=1`,
+  success_url: `${SITE_URL}/${page}/thanks?session_id={CHECKOUT_SESSION_ID}`,
+  cancel_url:  `${SITE_URL}/${page}/?canceled=1`,
   customer_email: email,
-  metadata: { sku, dealId, location, service }
+  metadata: { page, sku, dealId, location, service }   // page = slug ของหน้า
 }
 ```
 

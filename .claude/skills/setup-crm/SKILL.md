@@ -31,13 +31,15 @@ file is the spec for what objects/properties/products must exist.
 
 ## Step 1 — Build `catalog.json` from `offers.md`
 
-Read `context/offers.md` (or `context_example/offers.md`) and write
-`workspace/salepage_[PROJECT]/catalog.json`:
+Read `context/offers.md` (or `context_example/offers.md`) and write `catalog.json` **ในโฟลเดอร์ของหน้านั้น**
+(`workspace/[slug]/catalog.json`) — แต่ละหน้ามี catalog ของตัวเอง ราคา/sku แยกกันได้
 
 ```json
 {
   "brand": "GLOW SOCIETY",
   "currency": "THB",
+  "slug": "page_a",
+  "propertyPrefix": "glow",
   "locations": [
     { "id": "thonglor", "label": "ทองหล่อ" },
     { "id": "sathorn",  "label": "สาทร" }
@@ -62,10 +64,14 @@ Read `context/offers.md` (or `context_example/offers.md`) and write
 }
 ```
 
+- `slug` ต้องตรงกับ **ชื่อโฟลเดอร์** ของหน้านั้น (= URL) เช่น `workspace/page_a` → `"slug": "page_a"`
+- `propertyPrefix` ตัวเล็ก a–z — **ใช้ค่าเดียวกันทุกหน้าใน HubSpot portal เดียวกัน**
 - `price` เป็นจำนวนเต็มบาท (script จะ ×100 เป็นสตางค์ให้ Stripe เอง)
 - `billing`: `one_time` หรือ `monthly`
 - `hero: true` ได้ตัวเดียว
 - `stripePriceId` / `hubspotProductId` ปล่อย `null` ไว้ — script จะเขียนกลับให้
+- ต้องมี `dealProperties[]` + `hubspot{}` ด้วย — โครงเต็มอยู่ใน
+  `../generate-salepage/references/project-scaffold.md` ข้อ 1
 
 **ยืนยันตาราง sku/ราคา กับผู้ใช้ก่อนไปต่อ** — ราคาผิดตรงนี้ = ระบบเก็บเงินผิดทั้งสาย
 
@@ -120,6 +126,14 @@ node scripts/test-lead.mjs             # ยิง lead ปลอมเข้า
 deal properties มีค่าที่ส่งไป → แล้วบอกลิงก์ไปดู record ใน HubSpot
 
 ---
+
+## หลายหน้าใน HubSpot portal เดียว
+
+- **ใช้ `propertyPrefix` เดียวกันทุกหน้า** ที่อยู่ใน portal เดียวกัน ไม่งั้นจะได้ custom property
+  ชุดซ้ำๆ ต่างกันแค่ prefix (`glow_location`, `page2_location`, …) รกและกรองรายงานยาก
+- แยกว่า lead มาจากหน้าไหนด้วย `[prefix]_source_page` (= slug ของหน้า) ไม่ใช่ด้วย prefix
+- รัน `setup-hubspot.mjs --project [slug]` ต่อหน้า — property ที่มีอยู่แล้วจะถูกข้าม (409) ไม่ซ้ำ
+- Stripe: product/price ผูกกับ sku → ถ้าหน้าไหนใช้ sku เดียวกัน จะ reuse price เดิม (ไม่สร้างซ้ำ)
 
 ## เวลาแก้ราคาภายหลัง
 

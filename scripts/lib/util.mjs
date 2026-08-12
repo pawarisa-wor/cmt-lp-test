@@ -2,7 +2,7 @@
  * helper ที่ทุก script ใช้ร่วมกัน — โหลด .env, อ่าน args, อ่าน/เขียน catalog.json
  * Node 20+ (ใช้ fetch built-in) ไม่ต้องลง dependency เพิ่ม
  */
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
 
@@ -53,19 +53,53 @@ export function parseArgs(argv = process.argv.slice(2)) {
   return out;
 }
 
-/** ต้องระบุ project ได้ด้วย --project ถ้าไม่ใช่ salepage_glow */
+/** ชื่อโฟลเดอร์ template ที่ไม่ใช่ project จริง */
+const TEMPLATE_DIR = 'salepage_[PROJECT]';
+
+/** list project ที่มีอยู่ใน workspace/ (ไม่รวม template) */
+export function listProjects() {
+  const ws = join(REPO_ROOT, 'workspace');
+  if (!existsSync(ws)) return [];
+  return readdirSync(ws, { withFileTypes: true })
+    .filter((d) => d.isDirectory() && d.name.startsWith('salepage_') && d.name !== TEMPLATE_DIR)
+    .map((d) => d.name);
+}
+
+/**
+ * หา project folder: ใช้ --project ถ้าระบุมา
+ * ถ้าไม่ระบุและมี project เดียวใน workspace/ → ใช้อันนั้นเลย
+ * ถ้ามีหลายอัน → ให้ผู้ใช้เลือก
+ */
 export function projectDir(args) {
-  const name = args.project || 'salepage_glow';
-  const dir = join(REPO_ROOT, 'workspace', name);
-  if (!existsSync(dir)) {
-    fail(`ไม่พบ project: workspace/${name}\nระบุด้วย --project [ชื่อโฟลเดอร์]`);
+  if (args.project) {
+    const dir = join(REPO_ROOT, 'workspace', args.project);
+    if (!existsSync(dir)) fail(`ไม่พบ project: workspace/${args.project}`);
+    return dir;
   }
-  return dir;
+
+  const found = listProjects();
+  if (found.length === 1) return join(REPO_ROOT, 'workspace', found[0]);
+
+  if (found.length === 0) {
+    fail(
+      'ยังไม่มี salepage project ใน workspace/\n' +
+        `สร้างก่อนด้วย:  cp -r "workspace/${TEMPLATE_DIR}" workspace/salepage_[ชื่อโปรเจกต์]\n` +
+        '(หรือให้ skill generate-salepage ทำให้ใน Stop 0)',
+    );
+  }
+  fail(`มีหลาย project — ระบุด้วย --project [ชื่อ]\nที่มีอยู่: ${found.join(', ')}`);
 }
 
 export function readCatalog(args) {
-  const path = join(projectDir(args), 'catalog.json');
-  if (!existsSync(path)) fail(`ไม่พบ ${path}\nให้ skill setup-crm สร้าง catalog.json ก่อน`);
+  const dir = projectDir(args);
+  const path = join(dir, 'catalog.json');
+  if (!existsSync(path)) {
+    fail(
+      `ยังไม่มี catalog.json ใน ${dir.replace(REPO_ROOT + '/', '')}\n` +
+        'catalog.json คือแหล่งความจริงเดียวของ offers/ราคา/sku — สร้างจาก context/offers.md\n' +
+        'ให้ Claude ใช้ skill setup-crm (Step 1) แปลง offers.md → catalog.json ก่อน',
+    );
+  }
   return { path, catalog: JSON.parse(readFileSync(path, 'utf8')) };
 }
 

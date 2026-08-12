@@ -5,104 +5,112 @@
 
 ## จบคลาสนี้คุณจะได้
 
-- Salepage ที่ขายสินค้า/บริการของแบรนด์ตัวเอง ออนไลน์จริง (มี URL กดเข้าได้)
+- Salepage ของแบรนด์ตัวเอง ออนไลน์จริง (มี URL กดเข้าได้)
 - Lead จากฟอร์ม → เข้า HubSpot เป็น **Contact + Deal** อัตโนมัติ
 - ปุ่มชำระเงินผ่าน Stripe → จ่ายเสร็จ Deal เด้งเป็น **Closed Won** เอง
 - Event `generate_lead` / `purchase` ยิงเข้า GA4 + Facebook Pixel
 - Skill set ที่เอากลับไปทำ salepage ตัวถัดไปได้ใน 1 ชั่วโมง
 
+**รีโปนี้เป็น template เปล่า** — หน้าเพจ, API, catalog ยังไม่มี เพราะเราจะสร้างกันในคลาสทีละขั้น
+
 ---
 
-## 0. เตรียมก่อนเข้าคลาส (15 นาที ทำที่บ้าน)
+## 0. เตรียมก่อนเข้าคลาส (15 นาที)
 
 ```bash
 git clone <repo-url> cmt6-salepage
 cd cmt6-salepage
 cp .env.example .env
 node -v            # ต้อง 20 ขึ้นไป
-npm i -g vercel     # ถ้ายังไม่มี
+npm i -g vercel
 ```
 
-แล้วเปิด **[`workspace/salepage_glow/technical-setup.md`](workspace/salepage_glow/technical-setup.md)**
-→ ทำตามส่วน **A (checklist บัญชี)** และ **B (วิธีหา key ทีละขั้น)** ให้ `.env` เต็มก่อนเข้าคลาส
+เปิด **[`workspace/salepage_[PROJECT]/technical-setup.md`](workspace/salepage_%5BPROJECT%5D/technical-setup.md)**
+→ ทำตามส่วน **A (checklist บัญชี)** และ **B (วิธีหา key ทีละขั้น)**
 
-> ไม่ต้องรีบทำครบทุกตัว — ขอ **HubSpot** กับ **Vercel** ให้ได้ก่อนเป็นอย่างน้อย
-> ส่วน KIE.ai key จะแจกในคลาส
+> ขอ **HubSpot** กับ **Vercel** ให้ได้ก่อนเป็นอย่างน้อย · KIE.ai key แจกในคลาส
 
 ---
 
-## 1. Timeline ในคลาส (3 ชม.)
+## 1. ลำดับในคลาส (Workshop Steps)
 
-| เวลา | ทำอะไร | คำสั่งที่พิมพ์ใน Claude Code |
+| เวลา | ขั้น | พิมพ์อะไรใน Claude Code |
 |---|---|---|
-| 0:00–0:20 | เช็ค `.env` + อธิบาย funnel & โครง repo | `/setup-crm` (ดู dry-run ก่อน) |
-| 0:20–0:40 | **Company context** — แบรนด์เราคือใคร | `ใช้ skill create-company-context` |
-| 0:40–1:00 | **Product brief** — สินค้า/บริการ, จุดต่าง, ราคา, testimonials | กรอก `context/offers.md` |
-| 1:00–1:20 | **Config CRM + Payment อัตโนมัติ** | `ใช้ skill setup-crm` |
-| 1:20–1:40 | **Moodboard** — visual direction | `ใช้ skill create-moodboard` |
-| 1:40–2:30 | **สร้าง Salepage** (offer → wireframe → copy → assets → build) | `ใช้ skill generate-salepage` |
-| 2:30–2:45 | **Deploy** ขึ้น Vercel | `vercel --prod` |
-| 2:45–3:00 | **Test lead** + ดู Deal เด้งใน HubSpot | `node scripts/test-lead.mjs` |
+| 0:00–0:20 | เช็ค `.env` + อธิบาย funnel และโครงรีโป | — |
+| 0:20–0:45 | **1. Build company context** | `ใช้ skill create-company-context` |
+| 0:45–1:05 | **2. Product brief** — offer, ราคา, sku, testimonials | กรอก `context/offers.md` |
+| 1:05–1:25 | **3. Setup HubSpot + Stripe** | `ใช้ skill setup-crm` |
+| 1:25–1:45 | **4. Moodboard + visual direction** | `ใช้ skill create-moodboard` |
+| 1:45–2:40 | **5. Build landing page** (offer → wireframe → copy → assets → build) | `ใช้ skill generate-salepage` |
+| 2:40–2:50 | **Deploy** ขึ้น Vercel | `vercel --prod` |
+| 2:50–3:00 | **6. Test lead** + ดู Deal เด้งใน HubSpot | `node scripts/test-lead.mjs` |
+
+แต่ละขั้นเป็น input ของขั้นถัดไป — ข้ามแล้วขั้นหลังจะเดาข้อมูลเอง แล้วหน้าเพจจะไม่ตรงแบรนด์
 
 ---
 
 ## 2. โครง repo
 
 ```
-context/                    ← กรอกแบรนด์ตัวเอง (หัวข้อให้แล้ว เว้นว่างไว้)
+context/                    ← ข้อมูลแบรนด์ที่ใช้งานจริง
   company.md  clients.md  offers.md  voice.md
   brand-identity/visual-guideline.md
+  ▸ ตอนนี้ใส่แบรนด์ตัวอย่าง GLOW SOCIETY (wellness social club) ไว้ให้แล้ว
+    เพื่อให้ทดลองรันได้ทันที — จะทำแบรนด์ตัวเองก็สั่ง create-company-context ทับได้
 
-context_example/            ← ตัวอย่างเขียนครบ: GLOW SOCIETY (wellness social club)
-                              เอาไปดูเป็นแบบ หรือใช้ทำ workshop เลยก็ได้
+context_example/            ← ตัวอย่างอ้างอิง (ไม่ต้องแก้)
 
-.claude/skills/             ← 4 skills ที่ใช้ในคลาส
-  create-company-context/  create-moodboard/  generate-salepage/  setup-crm/
+.claude/skills/
+  create-company-context/   (+ templates/ = หัวข้อเปล่าสำหรับ reset)
+  create-moodboard/         (+ references/ = prompt 2 สไตล์: flowing / bento grid)
+  setup-crm/
+  generate-salepage/        (+ references/ 7 ไฟล์: offer-building, design-standards,
+                              copywriting, lead-form, tracking, cro-check, project-scaffold)
+  _shared/gpt-image-guide.md
 
-scripts/                    ← node scripts (รับ --dry-run ทุกตัว)
+scripts/                    ← ทุกตัวรับ --dry-run
   setup-hubspot.mjs   สร้าง deal properties + products ใน HubSpot
   setup-stripe.mjs    สร้าง products + prices ใน Stripe sandbox
-  gen-images.mjs      generate รูปด้วย KIE.ai (GPT Image 2) ตาม assets-plan.md
-  fetch-stock.mjs     ดึงรูป/ไอคอนจาก Pixabay
+  gen-images.mjs      generate รูปด้วย KIE.ai (GPT Image 2)
+  fetch-stock.mjs     ดึงรูป/ไอคอนจาก Pixabay (ฟรี)
+  optimize-images.mjs ย่อ/บีบรูปให้ผ่านเป้าน้ำหนัก
   test-lead.mjs       ยิง lead ปลอมเข้าระบบแล้วเช็คว่าเข้า HubSpot จริง
 
-workspace/salepage_glow/    ← project ตัวอย่าง (copy เป็นของตัวเองได้)
-  technical-setup.md   ★ tools + วิธี setup + spec ที่ AI อ่านเพื่อ config
-  assets-plan.md       ★ แผนรูปทั้งหมด + prompt (review ก่อน gen จริง)
-  catalog.json         ★ offers/ราคา/sku — แหล่งความจริงเดียวของทั้งระบบ
-  public/index.html    หน้า salepage
-  public/thanks.html   หน้าหลังจ่ายเงิน (ยิง purchase event)
-  api/lead.js          รับฟอร์ม → สร้าง Contact + Deal ใน HubSpot
-  api/checkout.js      สร้าง Stripe Checkout Session
-  api/stripe-webhook.js จ่ายสำเร็จ → ปิด Deal เป็น Closed Won
+workspace/
+  salepage_[PROJECT]/       ← template เปล่า มี 2 ไฟล์
+    technical-setup.md      ★ tools + วิธี setup ทีละคลิก + spec ที่ AI อ่านเพื่อ config เอง
+    assets-plan.md          ★ โครงวางแผนรูป (review ก่อน generate จริง)
 ```
+
+หน้าเพจ (`public/`), API (`api/`), `catalog.json`, `assets.json` **จะถูกสร้างในคลาส** —
+โครงและ code pattern อยู่ใน `.claude/skills/generate-salepage/references/project-scaffold.md`
 
 ---
 
-## 3. เริ่มทำ project ของตัวเอง
+## 3. เริ่มทำโปรเจกต์
 
 ```bash
-cp -r workspace/salepage_glow workspace/salepage_myproject
+cp -r "workspace/salepage_[PROJECT]" workspace/salepage_myproject
 ```
 
 แล้วบอก Claude Code:
 
 ```
-อ่าน CLAUDE.md แล้วใช้ skill create-company-context
+อ่าน CLAUDE.md แล้วเริ่มจาก skill create-company-context
 เพื่อสร้าง context ของแบรนด์ผม จากนั้นทำ salepage ใน workspace/salepage_myproject
 ```
 
 ---
 
-## 4. รัน local
+## 4. รัน local (หลังมีหน้าเพจแล้ว)
 
 ```bash
-cd workspace/salepage_glow
+cd workspace/salepage_myproject
 npm install
-vercel dev                 # เปิด http://localhost:3000
+vercel dev                 # http://localhost:3000
 ```
 
-เทสจ่ายเงินด้วยบัตร Stripe test: `4242 4242 4242 4242` · วันหมดอายุอนาคตอะไรก็ได้ · CVC `123`
+บัตรทดสอบ Stripe: `4242 4242 4242 4242` · วันหมดอายุอนาคตอะไรก็ได้ · CVC `123`
 
 ให้ webhook เข้าเครื่องตัวเองตอน dev:
 
@@ -112,21 +120,9 @@ stripe listen --forward-to localhost:3000/api/stripe-webhook
 
 ---
 
-## 5. Deploy
-
-```bash
-cd workspace/salepage_glow
-vercel link
-vercel env add HUBSPOT_PRIVATE_APP_TOKEN production   # ทำซ้ำกับ key ทุกตัวที่ใช้
-vercel --prod
-```
-
-รายละเอียดครบ + วิธีตั้ง webhook ให้ชี้มาที่ URL production: ดู `technical-setup.md` ส่วน B7
-
----
-
 ## ⚠️ ความปลอดภัย
 
-- ใช้ **Stripe sandbox / test key** ในคลาสเท่านั้น (`sk_test_…`) ห้ามใช้ key ตัวจริง
-- `.env` ถูก gitignore ไว้ — ถ้าเผลอ commit key ให้ revoke ทันทีที่ HubSpot/Stripe dashboard
+- ใช้ **Stripe test key** (`sk_test_…`) ในคลาสเท่านั้น — โค้ดปฏิเสธ key จริงให้อยู่แล้ว
+- `.env` ถูก gitignore ไว้ — ถ้าเผลอ commit key ให้ revoke ทันทีที่ dashboard
 - ราคาถูก lookup จาก `catalog.json` ฝั่ง server เสมอ ไม่เชื่อค่าที่ browser ส่งมา
+- ข้อมูลแบรนด์ GLOW SOCIETY ทั้งหมดเป็น **ข้อมูลสมมติ** สำหรับ workshop ไม่ใช่ธุรกิจจริง

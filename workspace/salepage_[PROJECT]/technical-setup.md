@@ -1,4 +1,4 @@
-# Technical Setup — salepage_glow
+# Technical Setup — salepage_[PROJECT]
 
 ไฟล์นี้มี 3 ส่วน อ่านตามบทบาท:
 
@@ -148,7 +148,7 @@ stripe listen --forward-to localhost:3000/api/stripe-webhook
 ## B7. Vercel — deploy
 
 ```bash
-cd workspace/salepage_glow
+cd workspace/salepage_[ชื่อโปรเจกต์ของคุณ]
 npm install
 vercel login
 vercel link                    # สร้าง project ใหม่ หรือผูกกับที่มีอยู่
@@ -189,16 +189,18 @@ vercel dev                     # http://localhost:3000
 
 `POST /crm/v3/properties/deals` (ต้องมี scope `crm.schemas.deals.write`)
 
+`[prefix]` = `propertyPrefix` ใน `catalog.json` (ตัวเล็ก a–z เช่น `glow`) — ต้องตรงกับที่ `api/lead.js` ส่ง
+
 | name | label | type | fieldType | options |
 |---|---|---|---|---|
-| `glow_location` | สาขาที่สนใจ | `enumeration` | `select` | `thonglor`, `sathorn` |
-| `glow_service_interest` | บริการที่สนใจ | `enumeration` | `select` | `grounding`, `moving`, `both` |
-| `glow_package` | แพ็กเกจ (SKU) | `string` | `text` | — |
-| `glow_source_page` | หน้าที่มาจาก | `string` | `text` | — |
+| `[prefix]_location` | สาขา/พื้นที่ที่สนใจ | `enumeration` | `select` | จาก `locations[]` ใน catalog |
+| `[prefix]_service_interest` | บริการที่สนใจ | `enumeration` | `select` | จาก `services[]` ใน catalog |
+| `[prefix]_package` | แพ็กเกจ (SKU) | `string` | `text` | — |
+| `[prefix]_source_page` | หน้าที่มาจาก | `string` | `text` | — |
 
 ```json
 {
-  "name": "glow_location",
+  "name": "[prefix]_location",
   "label": "สาขาที่สนใจ",
   "type": "enumeration",
   "fieldType": "select",
@@ -217,8 +219,8 @@ vercel dev                     # http://localhost:3000
 `POST /crm/v3/objects/products` (scope `e-commerce`) — 1 record ต่อ 1 offer ใน `catalog.json`
 
 ```json
-{ "properties": { "name": "Social Trial", "price": "390", "hs_sku": "GLOW-TRIAL",
-                  "description": "1 รอบ Grounding หรือ Moving + เครื่องดื่ม recovery" } }
+{ "properties": { "name": "[ชื่อแพ็กเกจ]", "price": "[ราคา]", "hs_sku": "[SKU]",
+                  "description": "[คำอธิบายสั้น]" } }
 ```
 
 เขียน `id` ที่ได้กลับเข้า `catalog.json` → `offers[].hubspotProductId`
@@ -249,14 +251,14 @@ vercel dev                     # http://localhost:3000
 ```json
 {
   "properties": {
-    "dealname": "GLOW SOCIETY — Social Trial — [ชื่อลูกค้า]",
+    "dealname": "[แบรนด์] — [ชื่อแพ็กเกจ] — [ชื่อลูกค้า]",
     "pipeline": "default",
     "dealstage": "appointmentscheduled",
     "amount": "390",
-    "glow_location": "thonglor",
-    "glow_service_interest": "grounding",
-    "glow_package": "GLOW-TRIAL",
-    "glow_source_page": "salepage_glow"
+    "[prefix]_location": "[location id]",
+    "[prefix]_service_interest": "[service id]",
+    "[prefix]_package": "[SKU]",
+    "[prefix]_source_page": "salepage_[PROJECT]"
   },
   "associations": [{
     "to": { "id": "[contactId]" },
@@ -309,7 +311,7 @@ vercel dev                     # http://localhost:3000
 
 ## C3. GA4 + Meta Pixel
 
-ตารางเต็มอยู่ใน `.claude/skills/generate-salepage/references/tracking.md` — สรุปสั้น:
+ตารางเต็มอยู่ใน `../../.claude/skills/generate-salepage/references/tracking.md` — สรุปสั้น:
 
 | funnel | GA4 | Pixel |
 |---|---|---|
@@ -338,7 +340,7 @@ vercel dev                     # http://localhost:3000
 - `resolution`: `1K` `2K` `4K`
 - ภาษาไทยใน prompt render ได้ถูกต้อง
 - 💰 มีค่าใช้จ่ายต่อรูป → **ต้องขอ confirm จากผู้ใช้ก่อนยิงจริงทุกครั้ง**
-- รายละเอียด + error codes: `.claude/skills/_shared/gpt-image-guide.md`
+- รายละเอียด + error codes: `../../.claude/skills/_shared/gpt-image-guide.md`
 
 ## C5. Pixabay
 

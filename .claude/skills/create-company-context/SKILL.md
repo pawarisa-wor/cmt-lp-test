@@ -44,8 +44,19 @@ Turn a founder's scattered brand knowledge into five structured files that every
 
 ### Step 0 — Check what already exists
 
-Read `context/*.md`. If files already have content, summarise what is filled vs empty and ask
-whether to extend or start over. Never silently overwrite existing answers.
+Read `context/*.md`. **The repo ships with the example brand (GLOW SOCIETY) already filled in**
+so the pipeline can run out of the box — so "has content" does not mean the user filled it.
+
+- ถ้าเนื้อหาเป็นแบรนด์ตัวอย่าง (เห็นหมายเหตุ 🧪 ที่หัวไฟล์ / ชื่อ GLOW SOCIETY) →
+  ถามว่าจะ **แทนที่ด้วยแบรนด์ของคุณ** ไหม ถ้าใช่ ให้ copy หัวข้อเปล่าจาก
+  `templates/` ในโฟลเดอร์ skill นี้ทับ `context/` ก่อนเริ่มสัมภาษณ์:
+  ```bash
+  cp -r .claude/skills/create-company-context/templates/. context/
+  ```
+- ถ้าเป็นแบรนด์ของผู้ใช้อยู่แล้ว → สรุปว่าหัวข้อไหนกรอกแล้ว/ยังว่าง แล้วถามว่าจะเติมต่อหรือเริ่มใหม่
+  **ห้ามเขียนทับคำตอบเดิมเงียบๆ**
+
+> ตัวอย่างที่เขียนครบยังอยู่ที่ `context_example/` เสมอ — ใช้เป็นตัวเทียบตอนผู้ใช้ตอบไม่ออก
 
 ### Step 1 — Group A: Business core → `company.md`
 

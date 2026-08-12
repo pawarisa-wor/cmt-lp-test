@@ -27,34 +27,48 @@ show the deliverable, then STOP and wait for the user to say ต่อ / next.
 Running the whole pipeline in one turn causes long silent turns and burns image credits on
 work the user hasn't approved yet.
 
-| Stop | Steps | Deliverable |
+Stop เหล่านี้ map ตรงกับ **Workshop Steps** ในบรีฟ (Offer Building → ASCII wireframe →
+Copywriting → Assets prep → Create landing page with HubSpot connection → Hosting on Vercel):
+
+| Stop | Workshop step | Deliverable |
 |---|---|---|
-| 1 | Read context → Offer building | `_progress.md` + `offer-building.md` |
-| 2 | Design guide + ASCII wireframe | `design-guide.md` + `wireframe.md` |
-| 3 | Copywriting (Thai) + lead-form spec | `copywriting.md` |
-| 4 | Image prep (manifest → generate/stock → optimize → OG + favicon) | `public/assets/manifest.md` + ไฟล์รูปครบ |
-| 5 | Build HTML + wire CRM/payment/tracking → deploy → CRO check | หน้าเพจ live + `cro-report.md` |
+| 0 | เตรียม project folder | `workspace/salepage_[ชื่อโปรเจกต์]/` + `_progress.md` |
+| 1 | **Offer Building** | `offer-building.md` |
+| 2 | Design guide + **ASCII wireframe** | `design-guide.md` + `wireframe.md` |
+| 3 | **Copywriting** (ไทย) + lead-form spec | `copywriting.md` |
+| 4 | **Assets prep** | `assets-plan.md` (เติมแล้ว) + `assets.json` + รูปครบ + `manifest.md` |
+| 5 | **Create landing page + HubSpot connection → Hosting on Vercel** | หน้าเพจ live + `cro-report.md` |
 
-Project folder: `workspace/salepage_[PROJECT]/`
+หลังจบ Stop 5 → **Test lead** ด้วย `node scripts/test-lead.mjs`
 
-```
-workspace/salepage_[PROJECT]/
-├── _progress.md          # tracker — update ทุก stop
-├── technical-setup.md    # spec ของ tools (อ่านก่อนต่อ API อะไรก็ตาม)
-├── assets-plan.md        # แผนรูป + prompt
-├── catalog.json          # offers/ราคา/sku — แหล่งความจริงเดียว
-├── offer-building.md  design-guide.md  wireframe.md  copywriting.md  cro-report.md
-├── public/{index.html, thanks.html, config.js, assets/}
-└── api/{lead.js, checkout.js, stripe-webhook.js}
-```
+### ต้องมีอะไรก่อนเริ่ม (ห้ามข้าม)
+
+| ต้องมี | ได้จาก | ถ้ายังไม่มี |
+|---|---|---|
+| `context/` มีข้อมูลแบรนด์จริง | skill `create-company-context` | หยุดแล้วเรียก skill นั้นก่อน |
+| visual direction + moodboard | skill `create-moodboard` | เตือนผู้ใช้ว่าหน้าเพจจะไม่ตรงแบรนด์ ถามว่าจะทำก่อนไหม |
+| `catalog.json` (offers/ราคา/sku) | skill `setup-crm` | ทำ Stop 1–4 ได้ แต่ **Stop 5 ต้องมี** |
 
 ---
+
+## Stop 0 — เตรียม project folder
+
+```bash
+cp -r "workspace/salepage_[PROJECT]" workspace/salepage_[ชื่อโปรเจกต์]
+```
+
+template folder มีแค่ `technical-setup.md` + `assets-plan.md` (โครงเปล่า) — ที่เหลือเราสร้างกันตาม stop
+สร้าง `_progress.md` แล้วบันทึกว่ากำลังทำ project ไหน ใช้ context อะไร
+
+> **STOP** — บอกชื่อโฟลเดอร์ที่สร้าง แล้วถามว่าเริ่ม Stop 1 เลยไหม
 
 ## Stop 1 — Context + Offer building
 
 1. Read **all** of: `context/company.md`, `clients.md`, `offers.md`, `voice.md`,
-   `brand-identity/visual-guideline.md`, plus this project's `technical-setup.md` and `catalog.json`.
-   If `context/` is empty → use `context_example/` and say so out loud.
+   `brand-identity/visual-guideline.md`, plus this project's `technical-setup.md`
+   (และ `catalog.json` ถ้ามีแล้ว).
+   ถ้า `context/` ว่าง → หยุด แล้วบอกให้ใช้ skill `create-company-context` ก่อน
+   (จะใช้ `context_example/` แทนได้เฉพาะกรณีผู้ใช้ยืนยันว่าอยากลองด้วยแบรนด์ตัวอย่าง)
 2. Confirm the two things that decide everything else:
    - **เป้าหมายของหน้านี้** (default: เก็บ lead → ขาย hero offer)
    - **customer journey** (default: FB/IG Ad → salepage → lead form → Stripe checkout → thanks)
@@ -116,11 +130,16 @@ Save `copywriting.md`.
 
 > **STOP** — update `_progress.md`, show the copy, ask for approval.
 
-## Stop 4 — Image prep
+## Stop 4 — Assets prep
 
-Read `assets-plan.md` and `.claude/skills/_shared/gpt-image-guide.md`.
+Read `assets-plan.md` (โครงเปล่าใน project folder) และ `../../.claude/skills/_shared/gpt-image-guide.md`
 **Images cost money per generation — confirm the list and prompts with the user before generating.**
 
+0. **เติม `assets-plan.md`** จาก wireframe's Image Requirements table + `visual-guideline.md`:
+   ทุกแถวต้องมี `id · priority · section · filename · ratio · resolution · เป้าไฟล์ · source · alt ไทย`
+   และเขียน prompt เต็มต่อรูป (ตามเทคนิคในไฟล์นั้น)
+   → **ให้ผู้ใช้ review ทั้งแผนก่อน** แล้วแปลงเป็น `assets.json` (schema: `outDir`, `photoRules`,
+   `assets[]`, `moodboard`, `stock[]`) ซึ่งเป็นไฟล์ที่ `scripts/gen-images.mjs` อ่าน
 1. Build the inventory from the wireframe's Image Requirements table. Mark each row:
    `มีแล้ว` / `ต้อง generate` / `ต้องหา stock`
 2. Generate: `node scripts/gen-images.mjs --dry-run` → review → `--only [group]` to run for real.
@@ -143,10 +162,16 @@ Read `assets-plan.md` and `.claude/skills/_shared/gpt-image-guide.md`.
 
 > **STOP** — update `_progress.md`, show the manifest, ask for approval.
 
-## Stop 5 — Build, wire, deploy, check
+## Stop 5 — Create landing page + HubSpot connection → Hosting on Vercel
 
-Read `manifest.md`, `design-guide.md`, `copywriting.md`, `technical-setup.md`,
-`references/tracking.md`, `references/cro-check.md`.
+Read `references/project-scaffold.md` **ก่อน** (มี pattern ที่ทดสอบแล้วของทุกไฟล์ที่ต้องสร้าง —
+ไม่ต้องคิดโครงใหม่) แล้วอ่าน `manifest.md`, `design-guide.md`, `copywriting.md`,
+`technical-setup.md`, `references/tracking.md`, `references/cro-check.md`
+
+**ต้องมี `catalog.json` ก่อน** — ถ้ายังไม่มี ให้หยุดแล้วรัน skill `setup-crm` ก่อน
+
+สร้างไฟล์ตามลำดับนี้: `package.json` → `vercel.json` → `lib/{catalog,hubspot}.js` →
+`api/{lead,checkout,stripe-webhook}.js` → `public/{config.js,index.html,thanks.html}`
 
 **Build** `public/index.html` + `public/thanks.html`:
 - Self-contained: Tailwind via CDN + a `<style>` block for brand tokens/fonts. No build step.

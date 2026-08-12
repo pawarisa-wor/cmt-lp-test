@@ -5,44 +5,49 @@
  *   node scripts/gen-images.mjs --dry-run                 ดู prompt ทั้งหมด ไม่เสียเงิน
  *   node scripts/gen-images.mjs --priority P0             gen เฉพาะรูปที่ขาดไม่ได้
  *   node scripts/gen-images.mjs --only hero-01,testi-01   gen เฉพาะที่ระบุ
- *   node scripts/gen-images.mjs --moodboard               gen moodboard (ต้องมี --prompt-file)
+ *   node scripts/gen-images.mjs --moodboard               gen moodboard → context/brand-identity/
+ *                                                        (ใช้ได้ก่อนมี salepage project · อ่าน prompt จาก
+ *                                                         context/brand-identity/moodboard-prompt.txt)
  *   node scripts/gen-images.mjs --force                   gen ทับไฟล์ที่มีอยู่แล้ว
+ *   node scripts/gen-images.mjs --project salepage_xxx    ระบุ project (ถ้ามีหลายอัน)
  *
  * 💰 มีค่าใช้จ่ายต่อรูป — ต้อง --dry-run ให้ผู้ใช้ยืนยันก่อนรันจริงเสมอ
  */
 import { existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import {
-  loadEnv, parseArgs, projectDir, info, ok, warn, fail, c, dryRunBanner,
+  loadEnv, parseArgs, projectDir, REPO_ROOT, info, ok, warn, fail, c, dryRunBanner,
 } from './lib/util.mjs';
 import { generateImage, validateSpec } from './lib/kie.mjs';
 
 loadEnv();
 const args = parseArgs();
-const dir = projectDir(args);
 const dry = Boolean(args['dry-run']);
 
-const assetsPath = join(dir, 'assets.json');
-if (!existsSync(assetsPath)) fail(`ไม่พบ ${assetsPath}`);
-const plan = JSON.parse(readFileSync(assetsPath, 'utf8'));
-
-// ── moodboard mode ────────────────────────────────────────────
+// ── moodboard mode — ทำงานได้โดยยังไม่ต้องมี salepage project ──
+// (moodboard คือขั้นก่อนสร้างหน้าเพจ output ไปที่ context/brand-identity/)
 if (args.moodboard) {
-  const promptFile = args['prompt-file'] || join(dir, '..', '..', 'context', 'brand-identity', 'moodboard-prompt.txt');
+  const brandDir = join(REPO_ROOT, 'context', 'brand-identity');
+  const promptFile = args['prompt-file'] || join(brandDir, 'moodboard-prompt.txt');
   if (!existsSync(promptFile)) {
     fail(
-      `ไม่พบไฟล์ prompt: ${promptFile}\n` +
-        'ให้ skill create-moodboard เขียน prompt ลงไฟล์นี้ก่อน (หรือระบุ --prompt-file)',
+      `ไม่พบไฟล์ prompt: ${promptFile.replace(REPO_ROOT + '/', '')}\n` +
+        'ให้ skill create-moodboard ประกอบ prompt แล้วเขียนลงไฟล์นี้ก่อน (หรือระบุ --prompt-file)',
     );
   }
   const prompt = readFileSync(promptFile, 'utf8').trim();
+  if (!prompt) fail('ไฟล์ prompt ว่างเปล่า');
+  if (/\[[A-Z_]+\]/.test(prompt)) {
+    fail(`prompt ยังมี placeholder ที่ไม่ได้เติม: ${prompt.match(/\[[A-Z_]+\]/g).join(', ')}`);
+  }
+
   const spec = {
     id: 'moodboard',
     prompt,
-    aspect_ratio: plan.moodboard?.aspect_ratio || '9:16',
-    resolution: plan.moodboard?.resolution || '2K',
+    aspect_ratio: args.ratio || '9:16',
+    resolution: args.resolution || '2K',
   };
-  const out = join(dir, plan.moodboard?.file || '../../../context/brand-identity/moodboard.png');
+  const out = join(brandDir, 'moodboard.png');
 
   dryRunBanner(dry);
   info(`${c.bold('moodboard')} → ${out}`);
@@ -63,6 +68,18 @@ if (args.moodboard) {
   }
   process.exit(0);
 }
+
+// ── โหมดปกติ: gen รูปในหน้าเพจ — ต้องมี project + assets.json ──
+const dir = projectDir(args);
+const assetsPath = join(dir, 'assets.json');
+if (!existsSync(assetsPath)) {
+  fail(
+    `ยังไม่มี assets.json ใน ${dir.replace(REPO_ROOT + '/', '')}\n` +
+      'ลำดับที่ถูกต้อง: วางแผนใน assets-plan.md → ให้ผู้ใช้ review → แปลงเป็น assets.json → ค่อย gen\n' +
+      'ให้ Claude ใช้ skill generate-salepage (Stop 4) ทำให้',
+  );
+}
+const plan = JSON.parse(readFileSync(assetsPath, 'utf8'));
 
 // ── เลือกรายการที่จะ gen ──────────────────────────────────────
 let list = plan.assets;

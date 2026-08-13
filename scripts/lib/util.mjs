@@ -54,15 +54,15 @@ export function parseArgs(argv = process.argv.slice(2)) {
 }
 
 /** ชื่อโฟลเดอร์ template ที่ไม่ใช่ page จริง */
-const TEMPLATE_DIR = 'salepage_[PROJECT]';
+const TEMPLATE_DIR = '[SALEPAGE_SLUG]';
 
 /**
- * list page ที่มีอยู่ใน workspace/
- * **ชื่อโฟลเดอร์ = URL slug** เช่น workspace/page_a → [domain]/page_a
+ * list page ที่มีอยู่ใน public_pages/
+ * **ชื่อโฟลเดอร์ = URL slug** เช่น public_pages/page_a → [domain]/page_a
  * ข้าม template, โฟลเดอร์ที่ขึ้นต้นด้วย _ หรือ . และ node_modules
  */
 export function listProjects() {
-  const ws = join(REPO_ROOT, 'workspace');
+  const ws = join(REPO_ROOT, 'public_pages');
   if (!existsSync(ws)) return [];
   return readdirSync(ws, { withFileTypes: true })
     .filter(
@@ -82,7 +82,7 @@ export function assertValidSlug(name) {
   if (!/^[a-z0-9][a-z0-9_-]*$/.test(name)) {
     fail(
       `ชื่อโฟลเดอร์ "${name}" ใช้เป็น URL ไม่ได้\n` +
-        'ชื่อโฟลเดอร์ใน workspace/ = URL slug → ใช้ได้แค่ a-z 0-9 - _ และต้องเริ่มด้วยตัวอักษร/เลข\n' +
+        'ชื่อโฟลเดอร์ใน public_pages/ = URL slug → ใช้ได้แค่ a-z 0-9 - _ และต้องเริ่มด้วยตัวอักษร/เลข\n' +
         'เช่น page_a, glow, ice-bath',
     );
   }
@@ -91,23 +91,23 @@ export function assertValidSlug(name) {
 
 /**
  * หา project folder: ใช้ --project ถ้าระบุมา
- * ถ้าไม่ระบุและมี project เดียวใน workspace/ → ใช้อันนั้นเลย
+ * ถ้าไม่ระบุและมี project เดียวใน public_pages/ → ใช้อันนั้นเลย
  * ถ้ามีหลายอัน → ให้ผู้ใช้เลือก
  */
 export function projectDir(args) {
   if (args.project) {
-    const dir = join(REPO_ROOT, 'workspace', args.project);
-    if (!existsSync(dir)) fail(`ไม่พบ project: workspace/${args.project}`);
+    const dir = join(REPO_ROOT, 'public_pages', args.project);
+    if (!existsSync(dir)) fail(`ไม่พบ project: public_pages/${args.project}`);
     return dir;
   }
 
   const found = listProjects();
-  if (found.length === 1) return join(REPO_ROOT, 'workspace', found[0]);
+  if (found.length === 1) return join(REPO_ROOT, 'public_pages', found[0]);
 
   if (found.length === 0) {
     fail(
-      'ยังไม่มีหน้าเพจใน workspace/\n' +
-        `สร้างก่อนด้วย:  cp -r "workspace/${TEMPLATE_DIR}" workspace/[slug]\n` +
+      'ยังไม่มีหน้าเพจใน public_pages/\n' +
+        `สร้างก่อนด้วย:  cp -r "public_pages/${TEMPLATE_DIR}" public_pages/[slug]\n` +
         'ชื่อโฟลเดอร์คือ URL ของหน้านั้น (เช่น page_a → [domain]/page_a)\n' +
         '(หรือให้ skill generate-salepage ทำให้ใน Stop 0)',
     );
@@ -168,3 +168,43 @@ export function dryRunBanner(isDry) {
 }
 
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/**
+ * ดึง portalId + uiDomain จาก HubSpot เอง — ผู้ใช้ไม่ต้องกรอก HUBSPOT_PORTAL_ID
+ * `uiDomain` สำคัญ: บัญชีที่อยู่ region อื่นใช้ app-na2.hubspot.com ไม่ใช่ app.hubspot.com
+ * ใช้ scope เดิมที่มีอยู่แล้ว ไม่ต้องเพิ่ม
+ * คืน null ถ้าเรียกไม่สำเร็จ — ลิงก์เป็นของแถม ห้ามทำให้ script ล้มเพราะเรื่องนี้
+ */
+let _accountInfo;
+export async function hubspotAccount(token = process.env.HUBSPOT_PRIVATE_APP_TOKEN) {
+  if (_accountInfo !== undefined) return _accountInfo;
+  _accountInfo = null;
+
+  if (token) {
+    try {
+      const res = await fetch('https://api.hubapi.com/account-info/v3/details', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const d = await res.json();
+        if (d?.portalId) {
+          _accountInfo = {
+            portalId: String(d.portalId),
+            uiDomain: d.uiDomain || 'app.hubspot.com',
+          };
+        }
+      }
+    } catch {
+      // เงียบไว้ — ไม่มีลิงก์ก็ยังทำงานได้
+    }
+  }
+
+  // เผื่อกรอก HUBSPOT_PORTAL_ID เองไว้ (ไม่จำเป็นแล้ว แต่ยังรองรับ)
+  if (!_accountInfo && process.env.HUBSPOT_PORTAL_ID) {
+    _accountInfo = {
+      portalId: process.env.HUBSPOT_PORTAL_ID,
+      uiDomain: 'app.hubspot.com',
+    };
+  }
+  return _accountInfo;
+}

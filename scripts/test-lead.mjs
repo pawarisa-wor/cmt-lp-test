@@ -5,7 +5,7 @@
  *   node scripts/test-lead.mjs --dry-run                 ดู payload ที่จะส่ง
  *   node scripts/test-lead.mjs                           ยิงเข้า http://localhost:3000
  *   node scripts/test-lead.mjs --url https://xxx.vercel.app
- *   node scripts/test-lead.mjs --project page_b          ระบุหน้า (ถ้ามีหลายหน้าใน workspace/)
+ *   node scripts/test-lead.mjs --project page_b          ระบุหน้า (ถ้ามีหลายหน้าใน public_pages/)
  *   node scripts/test-lead.mjs --sku GLOW-ALLIN --checkout
  *
  * ต้องรัน `vercel dev` ที่ root ของ repo ไว้ก่อน (ถ้าทดสอบ local)
@@ -13,6 +13,7 @@
 import { basename, dirname } from 'node:path';
 import {
   loadEnv, parseArgs, readCatalog, info, ok, warn, fail, c, dryRunBanner,
+  hubspotAccount,
 } from './lib/util.mjs';
 
 loadEnv();
@@ -26,7 +27,7 @@ const sku = String(args.sku || hero.sku);
 const offer = catalog.offers.find((o) => o.sku === sku);
 if (!offer) fail(`ไม่พบ sku ${sku} ใน catalog.json`);
 
-// slug ของหน้า = ชื่อโฟลเดอร์ใน workspace/ (API ใช้เลือก catalog ของหน้านั้น)
+// slug ของหน้า = ชื่อโฟลเดอร์ใน public_pages/ (API ใช้เลือก catalog ของหน้านั้น)
 const page = basename(dirname(catalogPath));
 
 const stamp = Date.now();
@@ -46,7 +47,7 @@ dryRunBanner(dry);
 info(`${c.bold('Test lead')} → ${base}/api/lead   (page: ${c.bold(page)} → ${base}/${page})\n`);
 info(c.dim(JSON.stringify(payload, null, 2)));
 info(`\nคาดว่าจะได้: Contact ใหม่ + Deal "${catalog.brand} — ${offer.name} — ${payload.name}"`);
-info(`  stage: ${catalog.hubspot.stageOnLead} · amount: ${offer.price} ${catalog.currency}`);
+info(`  pipeline: ${catalog.hubspot.pipeline} · stage: ${catalog.hubspot.stageOnLead} · amount: ${offer.price} ${catalog.currency}`);
 info(`  ${catalog.propertyPrefix}_package = ${offer.sku}`);
 if (payload.location) info(`  ${catalog.propertyPrefix}_location = ${payload.location}`);
 info(`  ${catalog.propertyPrefix}_source_page = ${page}`);
@@ -94,7 +95,7 @@ if (!token) {
 } else {
   const p = catalog.propertyPrefix;
   const props = [
-    'dealname', 'dealstage', 'amount',
+    'dealname', 'pipeline', 'dealstage', 'amount',
     `${p}_package`, `${p}_location`, `${p}_service_interest`, `${p}_source_page`,
   ];
 
@@ -121,14 +122,31 @@ if (!token) {
       warn(`amount ไม่ตรง catalog (ได้ ${deal.properties.amount} คาดว่า ${expectAmount})`);
     }
     if (!linked) warn('deal ไม่ได้ผูกกับ contact — เช็ค associationTypeId ใน catalog.json (ต้องเป็น 3)');
+
+    // stage ไม่ตรง = deployment ยังใช้ catalog เก่า (ลืม commit/push หลังรัน setup-hubspot)
+    // ไม่ใช่ HubSpot พัง — บอกให้ตรงจุด ไม่งั้นไล่ผิดทางยาว
+    const gotStage = deal.properties?.dealstage;
+    const wantStage = catalog.hubspot.stageOnLead;
+    if (gotStage && wantStage && gotStage !== wantStage) {
+      warn(
+        `dealstage ที่ได้ (${gotStage}) ไม่ตรง stageOnLead ใน catalog.json (${wantStage})\n` +
+          `  แปลว่า deployment ที่ ${base} ยังใช้ catalog ชุดเก่า → commit + push catalog.json แล้วรอ deploy ใหม่\n` +
+          `  หรือถ้าเพิ่งแก้ pipeline: node scripts/setup-hubspot.mjs --plan เพื่อดูสเตจจริงใน HubSpot`,
+      );
+    }
+    const gotPipeline = deal.properties?.pipeline;
+    if (gotPipeline && catalog.hubspot.pipeline && gotPipeline !== String(catalog.hubspot.pipeline)) {
+      warn(`pipeline ที่ได้ (${gotPipeline}) ไม่ตรง catalog.json (${catalog.hubspot.pipeline}) — เหตุผลเดียวกับข้อบน`);
+    }
   } catch (err) {
     warn(`verify ไม่สำเร็จ — ${err.message}`);
   }
 
-  if (process.env.HUBSPOT_PORTAL_ID) {
+  const account = await hubspotAccount();
+  if (account) {
     info(
       c.dim(
-        `\nเปิดดู: https://app.hubspot.com/contacts/${process.env.HUBSPOT_PORTAL_ID}/deal/${lead.dealId}`,
+        `\nเปิดดู: https://${account.uiDomain}/contacts/${account.portalId}/deal/${lead.dealId}`,
       ),
     );
   }
@@ -149,7 +167,7 @@ if (args.checkout) {
     } else {
       ok('สร้าง Checkout Session แล้ว');
       info(`  เปิดลิงก์นี้แล้วจ่ายด้วยบัตรทดสอบ 4242 4242 4242 4242:\n  ${json.url}`);
-      info(c.dim('  จ่ายเสร็จ deal ต้องเปลี่ยนเป็น closedwon (ต้องรัน stripe listen ไว้ด้วย)'));
+      info(c.dim(`  จ่ายเสร็จ deal ต้องย้ายไปสเตจ ${catalog.hubspot.stageOnPaid || '(ยังไม่ได้ตั้ง stageOnPaid)'} (ต้องมี webhook ทำงานด้วย)`));
     }
   } catch (err) {
     warn(`checkout error — ${err.message}`);

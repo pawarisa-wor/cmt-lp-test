@@ -33,11 +33,13 @@ function targetFor(file) {
   const found = plan.assets.find((a) => a.file === file);
   if (found?.target) return found.target;
 
-  if (/^hero/.test(file)) return { width: 1400, maxKB: 200 };
+  if (/^(hero|final)/.test(file)) return { width: 1400, maxKB: 200 };
   if (/^og-/.test(file)) return { width: 1200, height: 630, maxKB: 200 };
   if (/^(testi|avatar)/.test(file)) return { width: 256, maxKB: 30 };
-  if (/^(coach|community-02)/.test(file)) return { width: 400, maxKB: 80 };
-  if (/^(ground|move|location|community)/.test(file)) return { width: 800, maxKB: 150 };
+  if (/^(step|coach|community-02)/.test(file)) return { width: 400, maxKB: 80 };
+  if (/^(problem|service|ground|move|location|community)/.test(file)) {
+    return { width: 800, maxKB: 150 };
+  }
   return { width: 800, maxKB: 150 };
 }
 

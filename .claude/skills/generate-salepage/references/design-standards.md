@@ -65,6 +65,37 @@
 - section padding 64px (มือถือ) → 96–128px (เดสก์ท็อป)
 - breakpoints: `<640` 1 คอลัมน์ · `640–1024` 2 คอลัมน์ · `>1024` เต็ม layout
 
+
+## 5b. Layout & image sizing — กับดักที่ทำหน้าพังมาแล้วจริง
+
+กฎ 4 ข้อนี้มาจากบั๊กที่หลุดขึ้น production มาแล้ว ทุกข้อ **ผ่าน `curl` และ "ดูโค้ดแล้วถูก"**
+แต่พังเมื่อเปิดในเบราว์เซอร์จริง → `scripts/build-site.mjs` ตรวจ 3 ข้อแรกให้แล้ว build จะล้มถ้าผิด
+
+1. **ห้ามเขียน layout ใน inline style** (`style="display:grid;grid-template-columns:…"`)
+   inline specificity **ชนะ media query ใน `<style>` เสมอ** → grid ค้างที่ค่าเดียวทุกความกว้างจอ
+   *เคสจริง*: ทุก section ค้างที่ 1 คอลัมน์ รูปถูกยืดเต็ม 1200px หน้ายาว 13,000px มีช่องว่างเป็นพรืด
+   → **layout อยู่ใน class เท่านั้น** inline ใช้ได้เฉพาะค่าที่ไม่เกี่ยวกับ breakpoint (สี, margin เฉพาะจุด)
+
+2. **path ในหน้าต้องเป็น absolute ที่มี slug นำหน้า** (`/[slug]/assets/x.webp`)
+   `cleanUrls: true` + `trailingSlash: false` ทำให้ URL เป็น `/[slug]` ไม่มี `/` ปิดท้าย
+   เบราว์เซอร์จึง resolve `assets/x.webp` → `/assets/x.webp` (root) → **404 ทั้งหน้า**
+   และ `config.js` หายไปด้วยจน `window.SITE_CONFIG` undefined → **ฟอร์มส่ง `page: undefined` = ปุ่มจองพัง**
+
+3. **ห้ามใส่ `aspect-ratio` คู่กับ `max-height` ในกฎเดียวกัน** — พอความสูงถูกจำกัด
+   ความกว้างจะหดตามสัดส่วนไปด้วย ภาพเลยไม่เต็มคอลัมน์ (เช่น 16:9 + max-height 340px → กว้างแค่ 604px)
+   → ภาพแบนเนอร์ให้ `width:100%` + `height:clamp(…)` แล้วปล่อย `object-fit:cover` จัดการ crop
+
+4. **ทุก `<img>` ต้องถูกคุมกรอบ** — `.media{overflow:hidden}` + `aspect-ratio` **หรือ** `height` ที่ชัดเจน
+   + `object-fit:cover` · ปล่อย `width:100%;height:auto` ลอยๆ = ภาพแนวตั้งจะสูงครึ่งจอ
+   และดันเนื้อหาที่เหลือหายไปจากสายตา
+
+### รูปที่หามาแทน generate ต้อง "ดูก่อนใช้"
+
+stock ที่ค้นด้วยคำเดียว (`smartphone booking hand`) มักได้ **clip-art / เวกเตอร์แบน** ซึ่งชนกับ
+photography direction ที่เป็น documentary ทันที — **เปิดดูไฟล์ที่โหลดมาทุกใบก่อนเอาขึ้นหน้า**
+ถ้าไม่มีรูปที่เข้ากับ direction จริง **ให้ตัดรูปออกแล้วออกแบบ section ใหม่โดยไม่ใช้รูป**
+ดีกว่าใส่ภาพผิดแบรนด์หรือปล่อยกรอบเปล่าไว้ (กรอบเส้นประอ่านเป็น "ของหาย" ไม่ใช่ดีไซน์)
+
 ## 6. Components
 
 - **CTA**: สูง ≥48px · padding ข้าง 24–48px · ข้อความเป็นกริยาชัด ("จองรอบแรก 390 บาท")

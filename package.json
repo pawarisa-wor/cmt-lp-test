@@ -11,7 +11,8 @@
     "build": "node scripts/build-site.mjs",
     "dev": "vercel dev",
     "deploy": "vercel --prod",
-    "stripe:listen": "stripe listen --forward-to localhost:3000/api/stripe-webhook"
+    "stripe:listen": "stripe listen --forward-to localhost:3000/api/stripe-webhook",
+    "shot": "node scripts/screenshot.mjs"
   },
   "dependencies": {
     "stripe": "^17.0.0"

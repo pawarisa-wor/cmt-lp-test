@@ -4,7 +4,7 @@
  * 💰 ทุกการเรียกมีค่าใช้จ่าย — caller ต้องขอ confirm จากผู้ใช้ก่อน
  */
 import { writeFileSync } from 'node:fs';
-import { requireEnv, sleep, info, c } from './util.mjs';
+import { requireEnv, sleep, info, warn, c } from './util.mjs';
 
 const CREATE_URL = 'https://api.kie.ai/api/v1/jobs/createTask';
 const POLL_URL = 'https://api.kie.ai/api/v1/jobs/recordInfo';
@@ -103,11 +103,39 @@ export async function waitForResult(taskId, { intervalMs = 30_000, timeoutMs = 6
   throw new Error(`หมดเวลารอ task ${taskId} (10 นาที)`);
 }
 
-export async function download(url, outPath) {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`ดาวน์โหลดรูปไม่สำเร็จ: ${res.status}`);
-  writeFileSync(outPath, Buffer.from(await res.arrayBuffer()));
-  return outPath;
+/**
+ * ดาวน์โหลดรูปที่ generate เสร็จแล้ว — **retry เองเมื่อเจอ 5xx**
+ *
+ * ทำไมต้อง retry: ตอนนี้รูปถูก generate เสร็จและ**จ่ายเงินไปแล้ว** ถ้าปล่อยให้ 503 ทำให้แพ้
+ * คือจ่ายเงินแล้วไม่ได้ไฟล์ ต้อง generate ใหม่ = จ่ายสองรอบสำหรับรูปเดียว
+ * 4xx ไม่ retry เพราะ URL หมดอายุ/ผิด retry ไปก็เท่านั้น
+ */
+export async function download(url, outPath, { attempts = 4 } = {}) {
+  let lastStatus = 0;
+  for (let i = 1; i <= attempts; i++) {
+    let res;
+    try {
+      res = await fetch(url);
+    } catch (err) {
+      if (i === attempts) throw new Error(`ดาวน์โหลดรูปไม่สำเร็จ: ${err.message}`);
+      await sleep(2000 * i);
+      continue;
+    }
+    if (res.ok) {
+      writeFileSync(outPath, Buffer.from(await res.arrayBuffer()));
+      return outPath;
+    }
+    lastStatus = res.status;
+    if (res.status < 500) break; // 4xx = ไม่มีประโยชน์ที่จะลองใหม่
+    if (i < attempts) {
+      warn(`   ดาวน์โหลดได้ ${res.status} — ลองใหม่ครั้งที่ ${i + 1}/${attempts} (รูป generate เสร็จแล้ว)`);
+      await sleep(2000 * i);
+    }
+  }
+  throw new Error(
+    `ดาวน์โหลดรูปไม่สำเร็จ: ${lastStatus}` +
+      (lastStatus >= 500 ? ` (ลองแล้ว ${attempts} ครั้ง — รูปนี้ generate ไปแล้วแต่โหลดไม่ลง)` : ''),
+  );
 }
 
 /** ครบวงจร: create → poll → download */

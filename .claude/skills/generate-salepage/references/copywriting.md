@@ -74,7 +74,7 @@
 
 ---
 
-## Output — `copywriting.md`
+## Output — `wireframe-copywriting.md`
 
 เขียนเป็น section ตาม wireframe โดยแต่ละ section ระบุ:
 

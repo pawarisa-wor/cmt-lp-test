@@ -9,6 +9,7 @@
  *                                                        (ใช้ได้ก่อนมี salepage project · อ่าน prompt จาก
  *                                                         context/brand-identity/moodboard-prompt.txt)
  *   node scripts/gen-images.mjs --force                   gen ทับไฟล์ที่มีอยู่แล้ว
+ *   node scripts/gen-images.mjs --concurrency 1           ยิงทีละรูป (default 3 · สูงสุด 5)
  *   node scripts/gen-images.mjs --project salepage_xxx    ระบุ project (ถ้ามีหลายอัน)
  *
  * 💰 มีค่าใช้จ่ายต่อรูป — ต้อง --dry-run ให้ผู้ใช้ยืนยันก่อนรันจริงเสมอ
@@ -148,25 +149,38 @@ if (dry) {
   process.exit(0);
 }
 
-// ── generate ทีละรูป (ไม่ยิงพร้อมกัน กัน rate limit) ────────────
-info(c.yellow(`\n💰 กำลัง generate จริง ${queue.length} รูป — มีค่าใช้จ่าย\n`));
+// ── generate หลายรูปพร้อมกัน (worker pool) ─────────────────────
+// ทีละรูปเรียงกันช้าเกินไปสำหรับคลาส 3 ชั่วโมง — 13 รูปกินเวลา ~20 นาที
+// ยิงพร้อมกัน 3 รูปเหลือ ~7 นาที · ปรับได้ด้วย --concurrency (1 = พฤติกรรมเดิม)
+const concurrency = Math.max(1, Math.min(Number(args.concurrency || 3), 5));
+
+info(c.yellow(`\n💰 กำลัง generate จริง ${queue.length} รูป — มีค่าใช้จ่าย`));
+info(c.dim(`   ยิงพร้อมกัน ${concurrency} รูป (--concurrency 1 ถ้าเจอ rate limit)\n`));
 
 let done = 0;
+let outOfCredit = false;
 const failed = [];
+let next = 0;
 
-for (const a of queue) {
-  info(`[${++done}/${queue.length}] ${a.id} …`);
-  try {
-    await generateImage(a, a.out);
-    ok(`${a.id} → ${a.file}`);
-  } catch (err) {
-    failed.push(`${a.id}: ${err.message}`);
-    warn(`${a.id} ล้มเหลว — ${err.message}`);
-    if (err.status === 402) {
-      fail('เครดิตหมด — หยุดทั้งหมดเพื่อไม่ให้ยิงเปล่า');
+async function worker() {
+  while (next < queue.length) {
+    if (outOfCredit) return;
+    const a = queue[next++];
+    info(`[${++done}/${queue.length}] ${a.id} …`);
+    try {
+      await generateImage(a, a.out);
+      ok(`${a.id} → ${a.file}`);
+    } catch (err) {
+      failed.push(`${a.id}: ${err.message}`);
+      warn(`${a.id} ล้มเหลว — ${err.message}`);
+      // เครดิตหมด = ยิงต่อไปก็ล้มเหลวทุกตัว หยุดทุก worker ไม่ให้เสียเวลาเปล่า
+      if (err.status === 402) outOfCredit = true;
     }
   }
 }
+
+await Promise.all(Array.from({ length: Math.min(concurrency, queue.length) }, worker));
+if (outOfCredit) warn('เครดิต KIE.ai หมด — หยุดรูปที่เหลือ');
 
 info('');
 ok(`สำเร็จ ${queue.length - failed.length}/${queue.length} รูป`);

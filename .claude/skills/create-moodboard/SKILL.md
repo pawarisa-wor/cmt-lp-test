@@ -101,8 +101,18 @@ Regenerate only what's needed — edit the prompt file, then rerun with `--moodb
 
 ## Step 6 — Write `visual-guideline.md` (do not skip)
 
-The moodboard is worthless to the next skill unless it becomes rules. Write
-`context/brand-identity/visual-guideline.md` describing what the **approved image actually shows**
+**ลำดับสำคัญ: guideline เขียน "หลัง" ได้ภาพเสมอ ไม่ใช่ก่อน**
+
+⚠️ **ถ้า `visual-guideline.md` มีเนื้อหาอยู่แล้ว ห้ามถือว่าใช้ได้** — เกือบทุกครั้งมันคือไฟล์ที่
+ติดมาจาก `cp -r context_example/. context/` ซึ่งเขียนไว้ **ก่อน** มีภาพ จึงบรรยาย "สิ่งที่ตั้งใจ"
+ไม่ใช่ "สิ่งที่ภาพเป็น" ต้อง**อ่าน `moodboard.png` ด้วยตาแล้วเขียนใหม่ทั้งไฟล์**
+(สังเกตง่ายๆ: ถ้าท้ายไฟล์ยังเขียนว่า "moodboard.png ยังไม่ได้ generate" = ของเก่าแน่นอน)
+
+เวลาเขียนใหม่ ให้เทียบกับของเดิมแล้ว**บอกผู้ใช้ตรงๆ ว่าข้อไหนเปลี่ยนเพราะภาพจริงไม่ตรงกับที่ตั้งใจ**
+— จุดที่มักหลุดคือ tone label, ค่า HEX จริง, สี ink (ภาพหลายใบไม่มีตัวหนังสือดำเลย),
+radius/ขอบการ์ด และ typeface ที่โผล่ในภาพแต่ไม่ได้อยู่ในแผนเดิม
+
+Write `context/brand-identity/visual-guideline.md` describing what the **approved image actually shows**
 (ไม่ใช่สิ่งที่ตั้งใจให้เป็น — ถอดจากภาพจริง):
 
 - **Mood** 3–5 คำ + **tone label** จาก 11 ทิศทางใน
@@ -134,8 +144,25 @@ visual กับ voice ต้องมาจากทิศทางเดีย
 ถ้าผู้ใช้มีโพสต์/แคปชั่นเดิมอยู่ ขอมา 2–3 ชิ้นแล้วสกัด voice จากของจริงจะแม่นกว่าเดา
 ถ้า `voice.md` มีเนื้อหาอยู่แล้ว **ห้ามเขียนทับเงียบๆ** — เสนอส่วนที่จะแก้แล้วขอ confirm
 
-> **STOP** — สรุปว่าได้ครบ 3 ไฟล์ (moodboard.png + visual-guideline.md + voice.md)
+> ## 🔴 GATE A — ตรวจ moodboard + visual brand guideline
+> **หยุดรอคนตรวจ** ก่อนไป skill `generate-salepage`
+> **ต้องส่งของที่คนดูได้จริง ไม่ใช่เล่าว่าทำอะไรไป** — ส่งไฟล์รูป + วางสาระของ guideline ลงในแชท
+> (palette พร้อม HEX · ฟอนต์ · tone label) + path ของไฟล์ · แล้วอธิบายว่าให้ดูอะไรและข้อไหนเป็นการอนุมาน
+> ต้องวางให้ดูครบ:
+> 1. **`moodboard.png`** — ส่งไฟล์ให้ผู้ใช้เห็นภาพจริง (`moodboard.png` อยู่ใน `.gitignore`
+>    และอยู่แค่ในคอนเทนเนอร์ → บอกให้เซฟเก็บไว้ด้วย ไม่งั้นหายเมื่อ session จบ)
+> 2. **`visual-guideline.md`** — palette + typography + photography + UI
+>    พร้อมบอกว่าข้อไหน**ถอดจากภาพ** และข้อไหน**เป็นการอนุมาน** (เช่นสไตล์ปุ่ม ถ้าในภาพไม่มีปุ่ม)
+> 3. **`voice.md`** — ถ้าไฟล์มีอยู่แล้ว **ห้ามเขียนทับเงียบๆ** ให้เสนอส่วนที่จะแก้แล้วขอ confirm
+>
+> เสนอ lever ให้แก้เป็นข้อๆ (โทน / สลับสไตล์ / เฉพาะจุด / เริ่มใหม่) ไม่ใช่ถามลอยๆ ว่า "โอเคไหม"
+>
+> **approve แล้ว → `git add -A && git commit && git push` ทันที** (จะได้แค่ `.md` เพราะ
+> `moodboard.png` ถูก gitignore — ระบุใน commit message ว่า guideline ถอดจาก moodboard เวอร์ชันไหน)
 > แล้วบอกว่าขั้นต่อไปคือ skill `generate-salepage` ซึ่งจะยึด 3 ไฟล์นี้เป็นกรอบ
+>
+> **ถ้าคนสั่งแก้ → regenerate/แก้ไฟล์ แล้วกลับมาที่ gate นี้อีกครั้ง** ห้ามเดินไป generate-salepage
+> ด้วย brand identity ที่ยังไม่ผ่าน
 
 ---
 

@@ -55,6 +55,10 @@
 
 ## 7. Technical
 
+- [ ] **ทุก `src`/`href` ในหน้าโหลดขึ้นจริง "จากมุมเบราว์เซอร์"** — ดึง HTML ของหน้าที่ deploy แล้ว
+      เอาทุก src มา `new URL(src, [page URL])` แล้วยิงตาม path ที่ได้ · **ห้ามยิง path ที่เดาเอง**
+      (relative path บนหน้าที่ไม่มี `/` ปิดท้าย จะ resolve ไป root — รูปหายทั้งหน้า และ `config.js`
+      หายด้วยจน `window.SITE_CONFIG` undefined → ฟอร์มพัง แต่หน้ายัง "ดูปกติ" ถ้าดูแค่ตัวหนังสือ)
 - [ ] ทุกภาพมี `alt`, `width`, `height` · below-fold มี `loading="lazy"`
 - [ ] น้ำหนักรูปรวมทั้งหน้า ≤3MB
 - [ ] `<head>` มี favicon + OG/Twitter meta ครบ

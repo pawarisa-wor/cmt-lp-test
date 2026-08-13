@@ -70,7 +70,7 @@ let Stripe;
 try {
   ({ default: Stripe } = await import('stripe'));
 } catch {
-  fail('ยังไม่ได้ติดตั้ง dependency\nรัน: cd workspace/salepage_glow && npm install');
+  fail('ยังไม่ได้ติดตั้ง dependency\nรัน: npm install  (ที่ root ของรีโป)');
 }
 
 const stripe = new Stripe(key);

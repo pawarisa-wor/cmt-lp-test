@@ -1,6 +1,6 @@
-# Assets Plan — salepage_[PROJECT]
+# Assets Plan — [SALEPAGE_SLUG]
 
-> **โครงเปล่า** — `generate-salepage` Stop 4 จะเติมไฟล์นี้จาก `wireframe.md` + `context/brand-identity/visual-guideline.md`
+> **โครงเปล่า** — `generate-salepage` Stop 4 จะเติมไฟล์นี้จาก `wireframe-copywriting.md` + `context/brand-identity/visual-guideline.md`
 > **ต้องให้ผู้ใช้ review ก่อน generate จริงทุกครั้ง** (KIE.ai คิดเงินต่อรูป)
 > เสร็จแล้วแปลงเป็น `assets.json` ให้ `scripts/gen-images.mjs` อ่าน
 
@@ -71,8 +71,7 @@ avatar ≤30KB @256px · **รวมทั้งหน้า ≤3MB**
   2. ระบุจำนวนคนเป็นตัวเลข ("four friends") ไม่ใช่ "a group"
   3. ระบุ action กลาง motion ("mid-laugh", "reaching out a hand") → ได้ภาพไม่แข็ง
   4. ปิดท้ายด้วยข้อห้ามเสมอ — model เชื่อฟังข้อห้ามที่อยู่ท้าย prompt มากกว่าต้น
-  5. ดูตัวอย่าง prompt เต็มของแบรนด์ GLOW SOCIETY ได้ที่ commit 9ef7723
-     (`git show 9ef7723:workspace/salepage_glow/assets-plan.md`)
+  5. ตัวอย่าง prompt ที่เขียนครบทั้งชุด ดูได้ที่ `context_example/brand-identity/moodboard-prompt.txt`
 -->
 
 ## 5. Pixabay (ฟรี — ไม่ใช้ credit)

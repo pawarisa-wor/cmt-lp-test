@@ -75,7 +75,7 @@ poll ทุก **30 วินาที** · text-to-image ใช้เวลา 
 
 | Code | ความหมาย | วิธีแก้ |
 |---|---|---|
-| `401` | API key ผิด | เช็ค `KIE_API_KEY` ใน `.env` |
+| `401` | API key ผิด | เช็ค `KIE_API_KEY` (Environment variables ของ cloud environment หรือ `.env` ถ้าทำบนเครื่อง) |
 | `402` | เครดิตหมด | เติมที่ https://kie.ai (ในคลาสให้แจ้งผู้สอน) |
 | `429` | Rate limit | รอ 60 วินาทีแล้ว retry |
 | `5xx` | Server error | รอ 30 วินาที retry ไม่เกิน 3 ครั้ง |
@@ -92,7 +92,7 @@ poll ทุก **30 วินาที** · text-to-image ใช้เวลา 
 ## Output convention
 
 ```
-workspace/salepage_[PROJECT]/public/assets/[section]-[NN].webp
+public_pages/[SALEPAGE_SLUG]/public/assets/[section]-[NN].webp
 context/brand-identity/moodboard.png
 ```
 

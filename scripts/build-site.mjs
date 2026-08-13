@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /**
- * ประกอบทุกหน้าใน workspace/ เป็น public/ เดียวสำหรับ deploy ขึ้น Vercel ครั้งเดียว
+ * ประกอบทุกหน้าใน public_pages/ เป็น public/ เดียวสำหรับ deploy ขึ้น Vercel ครั้งเดียว
  *
- *   workspace/page_a/public/**  →  public/page_a/**   →  [domain]/page_a
- *   workspace/page_b/public/**  →  public/page_b/**   →  [domain]/page_b
+ *   public_pages/page_a/public/**  →  public/page_a/**   →  [domain]/page_a
+ *   public_pages/page_b/public/**  →  public/page_b/**   →  [domain]/page_b
  *
  *   node scripts/build-site.mjs --dry-run     ดูว่าจะประกอบอะไร
  *   node scripts/build-site.mjs               ประกอบจริง (ล้าง public/ ก่อน)
@@ -42,6 +42,34 @@ function dirSizeKB(dir) {
   return Math.round(bytes / 1024);
 }
 
+
+/**
+ * ตรวจ HTML ก่อนประกอบ — กันบั๊ก 2 อย่างที่เคยทำหน้าพังทั้งหน้ามาแล้ว
+ * ทั้งคู่ "ดูปกติ" ในโค้ดและตอบ 200 ตอน curl แต่พังเมื่อเปิดในเบราว์เซอร์จริง
+ * จึงต้องให้ build ล้มดังๆ ไม่ใช่รอคนไปเจอเอง
+ */
+function auditHtml(html) {
+  const errors = [];
+
+  // 1) layout ใน inline style — inline specificity ชนะ media query ใน <style> เสมอ
+  //    → grid ค้างที่ค่าเดียวทุกความกว้างจอ (หน้าเคยเหลือ 1 คอลัมน์ทั้งหน้า รูปยืดเต็ม 1200px)
+  for (const m of html.matchAll(/style="[^"]*grid-template-columns[^"]*"/g)) {
+    errors.push(`inline layout: ${m[0].slice(0, 60)}…  → ย้ายเป็น class ไม่งั้น media query ไม่ทำงาน`);
+  }
+
+  // 2) path แบบ relative — หน้าอยู่ที่ /[slug] ไม่มี "/" ปิดท้าย (cleanUrls + trailingSlash:false)
+  //    เบราว์เซอร์ resolve ออกไป root → รูป 404 ทั้งหน้า · config.js หายจนฟอร์มส่ง page:undefined
+  for (const m of html.matchAll(/(?:src|href)="(?!https?:|\/|#|mailto:|tel:|data:)([^"]+)"/g)) {
+    errors.push(`relative path: ${m[1]}  → ใช้ absolute ที่มี slug นำหน้า`);
+  }
+
+  // 3) aspect-ratio คู่กับ max-height — ความกว้างจะหดตามสัดส่วน ภาพไม่เต็มคอลัมน์
+  if (/aspect-ratio[^;}]*;[^}]*max-height/.test(html)) {
+    errors.push('aspect-ratio + max-height ในกฎเดียวกัน → ภาพจะแคบลงเอง ใช้ height ตรงๆ แทน');
+  }
+  return errors;
+}
+
 // ── หา page ที่พร้อม deploy ────────────────────────────────────
 const slugs = listProjects();
 const pages = [];
@@ -49,7 +77,7 @@ const skipped = [];
 
 for (const slug of slugs) {
   assertValidSlug(slug); // ชื่อโฟลเดอร์กลายเป็น URL — ต้องใช้ได้จริง
-  const dir = join(REPO_ROOT, 'workspace', slug);
+  const dir = join(REPO_ROOT, 'public_pages', slug);
   const pub = join(dir, 'public');
 
   if (!existsSync(pub)) {
@@ -73,6 +101,17 @@ for (const slug of slugs) {
     warn(`${slug}: ไม่มี catalog.json — /api/lead กับ /api/checkout ของหน้านี้จะใช้งานไม่ได้`);
   }
 
+  const htmlErrors = [];
+  for (const f of ['index.html', 'thanks.html']) {
+    const fp = join(pub, f);
+    if (existsSync(fp)) {
+      for (const e of auditHtml(readFileSync(fp, 'utf8'))) htmlErrors.push(`${slug}/${f}: ${e}`);
+    }
+  }
+  if (htmlErrors.length) {
+    fail(`HTML ไม่ผ่านการตรวจ ${htmlErrors.length} จุด — แก้ก่อน deploy:\n  ${htmlErrors.join('\n  ')}`);
+  }
+
   pages.push({ slug, dir, pub, brand, files: countFiles(pub), sizeKB: dirSizeKB(pub) });
 }
 
@@ -80,7 +119,7 @@ for (const slug of slugs) {
 dryRunBanner(dry);
 
 if (!pages.length) {
-  warn('ยังไม่มีหน้าเพจที่พร้อม deploy ใน workspace/');
+  warn('ยังไม่มีหน้าเพจที่พร้อม deploy ใน public_pages/');
   if (skipped.length) {
     for (const s of skipped) info(c.dim(`  - ${s.slug}: ${s.why}`));
   } else {
@@ -93,7 +132,7 @@ if (pages.length) {
   info(`${c.bold(`${pages.length} หน้า`)} จะถูกประกอบลง public/\n`);
   for (const p of pages) {
     info(
-      `  ${c.bold(('/' + p.slug).padEnd(22))} ← workspace/${p.slug}/public/  ` +
+      `  ${c.bold(('/' + p.slug).padEnd(22))} ← public_pages/${p.slug}/public/  ` +
         c.dim(`(${p.files} ไฟล์ · ${p.sizeKB}KB${p.brand ? ` · ${p.brand}` : ''})`),
     );
     if (p.sizeKB > 3072) warn(`   ${p.slug} หนัก ${p.sizeKB}KB — เกิน 3MB ควรรัน optimize-images.mjs`);
@@ -162,7 +201,7 @@ if (!args['no-index']) {
 ${items}
     </ul>
     <p class="note">หน้านี้สร้างโดย <code>scripts/build-site.mjs</code> — แต่ละหน้ามาจากโฟลเดอร์ใน
-    <code>workspace/</code> · CMT#6 workshop</p>
+    <code>public_pages/</code> · CMT#6 workshop</p>
 </body>
 </html>
 `,

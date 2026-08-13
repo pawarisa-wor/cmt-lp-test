@@ -90,12 +90,12 @@
 | `STRIPE_WEBHOOK_SECRET` | — *(ใช้ connector)* | ✅ | B3 |
 | `KIE_API_KEY` | ✅ | — | B6 |
 | `PIXABAY_API_KEY` | ✅ | — | B6 |
-| `SITE_URL` | ✅ | — *(Vercel ตั้งเองจาก `VERCEL_PROJECT_PRODUCTION_URL`)* | B7 |
 
 **ข้ามได้** — ไม่มีก็แค่ track ไม่ได้ หน้าเพจยังทำงานครบ
 
 | ตัวแปร | Claude Code | Vercel | ได้จากส่วน |
 |---|---|---|---|
+| `SITE_URL` | ⭕️ | — *(Vercel ตั้งเองจาก `VERCEL_PROJECT_PRODUCTION_URL`)* | B7 |
 | `PUBLIC_GA4_MEASUREMENT_ID` | ⭕️ | — | B4 |
 | `PUBLIC_FB_PIXEL_ID` | ⭕️ | — | B5 |
 
@@ -122,8 +122,8 @@
    → test key เท่านั้น, environment ส่วนตัวเท่านั้น, **revoke ทุกตัวหลังเรียนจบ**
 
 ```bash
-# เช็คว่าครบไหมโดยไม่พิมพ์ค่าออกมา (ฝั่งเซสชันต้องมี 4 ตัวนี้)
-for v in HUBSPOT_PRIVATE_APP_TOKEN KIE_API_KEY PIXABAY_API_KEY SITE_URL; do
+# เช็คว่าครบไหมโดยไม่พิมพ์ค่าออกมา (ฝั่งเซสชันต้องมี 3 ตัวนี้)
+for v in HUBSPOT_PRIVATE_APP_TOKEN KIE_API_KEY PIXABAY_API_KEY; do
   [ -n "$(eval echo \$$v)" ] && echo "$v ✅" || echo "$v ❌ ยังว่าง"
 done
 ```

@@ -21,7 +21,16 @@ const args = parseArgs();
 const dry = Boolean(args['dry-run']);
 const { path: catalogPath, catalog } = readCatalog(args);
 
-const base = String(args.url || process.env.SITE_URL || 'http://localhost:3000').replace(/\/$/, '');
+const rawBase = args.url || process.env.SITE_URL;
+if (!rawBase) {
+  fail(
+    'ไม่รู้ว่าจะยิงไปที่ URL ไหน\n' +
+      'ใส่ --url ตอนรัน:  node scripts/test-lead.mjs --url https://[project].vercel.app\n' +
+      '(หรือตั้ง SITE_URL ใน env ก็ได้ แต่ค่า env ถูก copy ตอน session เริ่ม — ใส่ --url ง่ายกว่า)\n' +
+      'ทำบนเครื่องตัวเองที่รัน vercel dev อยู่:  --url http://localhost:3000',
+  );
+}
+const base = String(rawBase).replace(/\/$/, '');
 const hero = catalog.offers.find((o) => o.hero) || catalog.offers[0];
 const sku = String(args.sku || hero.sku);
 const offer = catalog.offers.find((o) => o.sku === sku);

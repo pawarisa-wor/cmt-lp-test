@@ -49,7 +49,7 @@ Repo นี้เป็น **template เปล่า** สำหรับ works
 ถ้าไม่เตือนไว้ก่อน ผู้ใช้จะเสียเวลาไปกับ context แล้วมาค้างตอนขั้น 3 เพราะยังไม่ได้สมัครบัญชี
 
 ```bash
-for v in HUBSPOT_PRIVATE_APP_TOKEN KIE_API_KEY PIXABAY_API_KEY SITE_URL; do
+for v in HUBSPOT_PRIVATE_APP_TOKEN KIE_API_KEY PIXABAY_API_KEY; do
   [ -n "$(eval echo \$$v)" ] && echo "$v ✅" || echo "$v ❌ ยังว่าง"
 done
 ```
@@ -62,6 +62,11 @@ done
 | 4 | `KIE_API_KEY` | สร้าง `moodboard.png` และรูปบนหน้าเพจไม่ได้ |
 | 5 | `PIXABAY_API_KEY` | ดึง stock photo ไม่ได้ |
 | deploy | Vercel เชื่อม repo แล้ว | deploy ไม่ได้ |
+
+**`SITE_URL` ไม่ต้องเตรียม** — ไม่มีโค้ดฝั่ง Vercel ที่ต้องใช้ (fallback ไป `VERCEL_PROJECT_PRODUCTION_URL`)
+เหลือที่เดียวที่อ่านค่านี้คือ `test-lead.mjs` ตอนขั้น 6 ซึ่ง**ใส่ `--url` แทนได้เลย**:
+`node scripts/test-lead.mjs --url https://[project].vercel.app` — สั้นกว่าและไม่ต้องเปิด session ใหม่
+เพื่อให้ env มีผล
 
 ### Connector — เช็คก่อนว่ามีตัวไหนใช้ได้ ก่อนจะไปขอ key จากผู้ใช้
 

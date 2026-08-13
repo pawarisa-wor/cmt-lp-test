@@ -204,8 +204,8 @@ deal properties มีค่าที่ส่งไป → แล้วบอ�
 - `test-lead.mjs` เตือนเองถ้า `dealstage` ที่ได้ไม่ตรง `stageOnLead` ใน catalog —
   เจอเตือนนี้แปลว่า **deployment ยังใช้ catalog เก่า** (ลืม commit/push) ไม่ใช่ HubSpot พัง
 
-**ตรวจให้ครบก่อนบอกว่าเสร็จ** — `test-lead.mjs` ยิงผ่าน `SITE_URL` ถ้ายังชี้ localhost
-จะไม่ได้ทดสอบของจริงบน Vercel · และปุ่มจ่ายเงินจะใช้ได้เมื่อ `STRIPE_SECRET_KEY` กับ
+**ตรวจให้ครบก่อนบอกว่าเสร็จ** — `test-lead.mjs` ต้องระบุ `--url [production URL]`
+(ไม่ระบุแล้วจะหยุดพร้อมบอกวิธี ไม่เดา localhost ให้) · และปุ่มจ่ายเงินจะใช้ได้เมื่อ `STRIPE_SECRET_KEY` กับ
 `STRIPE_WEBHOOK_SECRET` อยู่ใน **Vercel** แล้วเท่านั้น (connector แทนไม่ได้)
 
 ---

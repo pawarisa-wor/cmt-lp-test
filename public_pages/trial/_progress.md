@@ -6,8 +6,8 @@
 |---|---|---|
 | 0 — page folder + brief | ✅ เสร็จ | URL: `/trial` · angle: "มาคนเดียวก็ได้เพื่อน" |
 | 1 — Offer building | ✅ รอ Gate B | ราคาจาก offers.md — ยังไม่มี catalog.json |
-| 2 — Design guide + wireframe | ⏳ รอทำ | |
-| 3 — Copywriting | ⏳ รอทำ | |
+| 2 — Design guide + wireframe | ✅ รอ Gate C | design-guide.md + wireframe (ส่วน A) เสร็จ |
+| 3 — Copywriting | ✅ รอ Gate C | wireframe-copywriting.md ส่วน B เสร็จ |
 | 4 — Assets prep | ⏳ รอทำ | ต้องขออนุมัติค่าใช้จ่าย KIE.ai ก่อน |
 | 5a — Build HTML | ⏳ รอทำ | |
 | 5b — Deploy preview + CRO | ⏳ รอทำ | Gate D |

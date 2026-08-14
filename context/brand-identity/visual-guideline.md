@@ -1,82 +1,98 @@
 # Visual Guideline — GLOW SOCIETY
-
+> ถอดจาก `moodboard.png` ที่ generate แล้ว (Flowing/Editorial style, 9:16, 2K)
 > ข้อมูลสมมติสำหรับ workshop
 
-## Mood ที่ต้องการ
+---
 
-สดใส · มีชีวิตชีวา · เหมือนเช้าวันเสาร์ที่อากาศดี · วัยรุ่นแต่ไม่เด็ก · social ไม่ใช่สปา
+## Mood
+สดใส · มีชีวิตชีวา · urban กรุงเทพ · community ก่อนอื่น · ไม่ใช่สปา
 
-**Tone direction (จาก 11 แบบใน `references/design-standards.md`): Playful / toy-like**
-ผสม accent แบบ **Maximalist** เล็กน้อยที่ section community — เพราะแบรนด์ขาย "ความสนุกแบบกลุ่ม"
-ไม่ใช่ "ความสงบส่วนตัว" (ถ้าเลือก Soft/pastel หรือ Organic จะกลายเป็นสปาทันที = ผิดโจทย์)
+**Tone label: Bold Lifestyle / Energetic Editorial**
+*(อัปเดตจากเดิม: "Playful/toy-like" — ภาพที่ได้มี editorial sophistication มากกว่า
+มี hand-drawn element (วงกลม, ลูกศร, เส้นใต้) ที่ให้ความ playful แต่ composition
+โดยรวมเป็น premium lifestyle magazine มากกว่า toy-like)*
 
-**Theme: White (light) theme** — เพราะ dark theme ทำให้ ice bath/sauna ดูเป็น recovery clinic
-ของผู้ใหญ่ ส่วน light theme + สีจัด ให้ความรู้สึกกลางวัน มีพลัง และดูอายุน้อยกว่า
+**Theme: Light (warm off-white)** — confirmed จากภาพ พื้นหลังเป็น cream/parchment
+ไม่ใช่ขาวจัด เพิ่มความอบอุ่นและความรู้สึก hand-crafted
 
-## สี
+---
 
-| บทบาท | HEX | ใช้ที่ไหน |
+## Palette
+*(ค่า HEX ถอดจากภาพ — swatches ปรากฏเป็น chip สีในภาพโดยตรง)*
+
+| บทบาท | HEX | ปรากฏในภาพอย่างไร |
 |---|---|---|
-| Primary | `#0F5FD9` | ปุ่ม CTA หลัก, ไอคอน Grounding — น้ำเงินอิเล็กทริก (สื่อ ice/cold) |
-| Accent (hot) | `#FF5A36` | badge, urgency, ไอคอน Moving, hover — ส้มแดง (สื่อ sauna/heat/energy) |
-| Accent (glow) | `#FFD84D` | highlight, underline marker, ดาว rating |
-| Ink | `#111418` | ตัวหนังสือหลัก |
-| Ink muted | `#5C6570` | ตัวหนังสือรอง |
-| Surface | `#FFFFFF` | การ์ด, ฟอร์ม |
-| Surface tint | `#F2F6FF` | พื้น section สลับ (ฟ้าจางมาก) |
-| Surface warm | `#FFF4EF` | พื้น section sauna/community |
+| **Primary** | `#0F5FD9` | chip สีน้ำเงินไฟฟ้า, duotone BTS, กรอบ label |
+| **Accent (hot)** | `#FF5A36` | ตัว headline, chip สีส้ม, ลูกศร, เส้นใต้ |
+| **Accent (glow)** | `#FFD84D` | chip เหลืองเล็กมุมล่าง |
+| **Ink** | `#1A2035` | label text สีเข้ม *(ภาพจริง: navy เข้มมากกว่า pure black)* |
+| **Ink muted** | `#5C6570` | ตัวอักษรรองในภาพ |
+| **Surface** | `#FAF7F2` | พื้นหลัง cream/parchment *(ไม่ใช่ขาวจัด — ถอดจากภาพ)* |
+| **Surface tint** | `#F2F6FF` | พื้น section สลับ (inferred) |
+| **Surface warm** | `#FFF4EF` | พื้น section sauna/community (inferred) |
 
-**คู่สีที่เป็นลายเซ็นแบรนด์: น้ำเงินเย็น × ส้มร้อน** — สะท้อน ice bath × sauna ตรงตัว
-ห้ามใช้: SaaS blue `#3B82F6`, purple gradient บนพื้นขาว, เขียว sage/beige แบบสปา (ทำให้ดูแก่)
+**คู่สีลายเซ็น: น้ำเงินเย็น × ส้มร้อน** — ปรากฏชัดเจนในภาพ duotone BTS + chip
+ห้ามใช้: SaaS blue `#3B82F6`, purple gradient, เขียว sage/beige สปา
+
+---
 
 ## Typography
+*(ฟอนต์ในภาพ — ถอดจาก headline ที่ปรากฏจริง)*
 
-- **Headline: `Bai Jamjuree`** (700/600) — ฟอนต์ไทยทรงเหลี่ยม มีคาแรกเตอร์ ดูสปอร์ต ไม่ใช่ system font
-- **Body: `Anuphan`** (400/500) — อ่านง่ายบนมือถือ ทรงโมเดิร์น
-- **Accent/ตัวเลข: `Bai Jamjuree` 700 italic** สำหรับราคาและตัวเลขสถิติ
-- Scale 1.333x (perfect fourth) · headline line-height 1.15 · body 1.6
-- ห้ามใช้เป็นฟอนต์หลัก: Inter, Roboto, Arial, Helvetica, Space Grotesk, system-ui, Sarabun (ราชการเกิน)
+- **Headline: `Bai Jamjuree` 700** — ภาพแสดง Thai display font ทรงเหลี่ยม มีน้ำหนัก
+  ตรงกับ Bai Jamjuree — ดูสปอร์ต มีคาแรกเตอร์ ไม่ราชการ *(confirmed จากภาพ)*
+- **Body: `Anuphan` 400/500** — อ่านง่ายบนมือถือ *(inferred — ไม่มี body text ในภาพ)*
+- **Accent labels: Condensed caps** — label เช่น "COLD CLARITY COMMUNITY",
+  "HEAT CONNECTION EXPANSION" ใช้ตัวพิมพ์ใหญ่ condensed *(confirmed)*
+- Scale 1.333x · headline line-height 1.15 · body 1.6 *(inferred)*
+- ห้าม: Inter, Roboto, Arial, Helvetica, system-ui, Sarabun
 
-## ลักษณะรูปที่ใช้ได้
+---
 
-- **ประเภท**: ถ่ายจริงแนว lifestyle / documentary — เหมือนเพื่อนถ่ายให้ ไม่ใช่ studio จัดแสง
-- **แสง**: กลางวันธรรมชาติ สว่าง มี highlight ที่ผิว · sauna ใช้แสงอุ่นจากไม้ · ice bath ใช้แสงฟ้าสว่าง
-- **คนในรูป**: คนไทย/เอเชียตะวันออกเฉียงใต้ อายุ 22–32 · เน้นผู้หญิงและ LGBTQ+ ·
-  ส่วนใหญ่ **2–5 คนต่อรูป** (สื่อ community) · มีรูปเดี่ยวได้เฉพาะ portrait โค้ช
-- **อารมณ์**: หัวเราะจริง กำลังคุยกัน ตัวเปียก ผมเปียก เหนื่อยแบบมีความสุข
-  ห้ามยิ้มค้างเข้ากล้องแบบ stock
+## Photography Direction
+*(ถอดจากภาพจริงที่ปรากฏในมูดบอร์ด)*
+
+- **ใคร**: คนไทย/SEA อายุ 22–32 · mixed gender · LGBTQ+ inclusive ·
+  **2–5 คนต่อรูปเสมอ** (ห้ามภาพคนเดียวยกเว้น portrait โค้ช) *(confirmed)*
+- **สถานการณ์**: ice bath กลุ่ม · ซาวน่ากลุ่ม · คลาสเต้น mid-motion · post-workout ·
+  red light therapy · พื้นหลัง urban กรุงเทพ (skyline) *(confirmed ครบทุกซีน)*
+- **แสง**: กลางวันธรรมชาติสว่างสำหรับ ice bath/dance · amber ในซาวน่า ·
+  แดงเข้มสำหรับ red light · *(confirmed)*
+- **อารมณ์**: หัวเราะจริง กำลังคุย เปียก ผมบิน เหนื่อยแบบมีความสุข
+  เพื่อน shot — ไม่ posed *(confirmed)*
+
+---
 
 ## ลักษณะรูปที่ห้ามใช้
+*(ถอดจากสิ่งที่ไม่ปรากฏในภาพ + guideline ดั้งเดิม)*
 
-- stock ฝรั่งยิ้มเฟค / นายแบบนางแบบฟิตเนสกล้ามชัด
-- ภาพมืด สปา เทียน หินซ้อน ดอกไม้ลอยน้ำ (โทนผู้ใหญ่ 40+)
-- ภาพคนเดียวนั่งสมาธิเงียบๆ (ขัดกับ community positioning)
-- ภาพที่มี watermark หรือโลโก้แบรนด์อื่น
+- stock ฝรั่งยิ้มเฟค / นายแบบกล้ามชัด
+- ภาพมืด เทียน หินซ้อน ดอกไม้ลอยน้ำ (สปาผู้ใหญ่ 40+)
+- คนเดียวนั่งสมาธิ (ขัด community positioning)
+- watermark หรือโลโก้แบรนด์อื่น
+
+---
 
 ## องค์ประกอบ UI
+*(hand-drawn elements confirmed จากภาพ · ค่า CSS inferred — ไม่มีปุ่มหรือการ์ดในมูดบอร์ด)*
 
-- **Radius**: 20px (การ์ด) · 999px (ปุ่ม, badge, pill) — ความกลมสื่อ playful
-- **Shadow**: `0 12px 32px rgba(15,95,217,.14)` สำหรับการ์ดลอย · ปุ่มใช้เงาสีเดียวกับปุ่มเข้มขึ้น
-- **Spacing**: base 4px → 8/12/16/24/32/48/64/96 · section padding 64px (มือถือ) / 96–128px (จอใหญ่)
-- **Section divider**: ไม่ใช้เส้นตรง — ใช้สลับพื้นสี + วงกลมสี blur (glow orb) ตกแต่งมุม
-- **Texture**: noise overlay จางๆ 3% บน section hero และ community กันภาพแบนเรียบ
-- ห้าม glass morphism · ห้าม gradient ม่วง-ชมพูแบบ AI-generated
+**Confirmed จากภาพ:**
+- Torn-paper / cut-out edges บนรูปภาพ
+- Hand-drawn accent: วงกลมล้อมตัวหนังสือ (ส้ม), ลูกศรชี้, เส้นใต้ headline
+- Paper grain texture บนพื้นหลัง (ชัดเจน)
+- Drop shadow ใต้รูป
+- Color chip / swatch สี่เหลี่ยมเล็กกระจายระหว่างภาพ
+- Label pills แนว condensed caps *(เช่น "THONG LOR · SATHORN · BANGKOK")*
 
-## Moodboard
+**Inferred (ไม่ปรากฏในมูดบอร์ด):**
+- Radius: 20px (การ์ด) · 999px (ปุ่ม, badge) — playful ตามทิศทาง
+- Shadow การ์ด: `0 12px 32px rgba(15,95,217,.14)`
+- Spacing: base 4px → 8/12/16/24/32/48/64/96
+- Section divider: สลับพื้นสี + glow orb มุม *(ไม่ใช้เส้นตรง)*
+- ห้าม: glass morphism, gradient ม่วง-ชมพู
 
-- **`moodboard.png`** — ยังไม่ได้ generate (ต้องมี `KIE_API_KEY` ก่อน)
-  prompt ที่ประกอบเสร็จแล้วอยู่ที่ `moodboard-prompt.txt` ในโฟลเดอร์เดียวกัน สร้างได้ 2 ทาง:
+---
 
-  ```bash
-  # (ก) ใช้ prompt ของตัวอย่างนี้ตรงๆ
-  node scripts/gen-images.mjs --moodboard \
-    --prompt-file context_example/brand-identity/moodboard-prompt.txt --dry-run
-
-  # (ข) copy ตัวอย่างทั้งชุดไปเป็น context ของเราก่อน แล้วรันสั้นๆ
-  cp -r context_example/. context/
-  node scripts/gen-images.mjs --moodboard --dry-run   # ดู prompt ก่อน
-  node scripts/gen-images.mjs --moodboard             # ยิงจริง (9:16, 2K)
-  ```
-
-  ตัดคำว่า `--dry-run` ออกเมื่อพอใจกับ prompt แล้ว (💰 คิดเงินต่อรูป)
-- สไตล์ที่เลือกสำหรับแบรนด์นี้: **A) Flowing** (editorial ซ้อนทับ ดูมีชีวิต) มากกว่า bento grid
+## Moodboard Reference
+- **`moodboard.png`** — Flowing/Editorial style · 9:16 · 2K
+- Prompt: `context/brand-identity/moodboard-prompt.txt`

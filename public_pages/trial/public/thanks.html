@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ชำระเงินสำเร็จ — GLOW SOCIETY</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@700&family=Anuphan:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary: #0F5FD9;
+      --accent-hot: #FF5A36;
+      --ink: #1A2035;
+      --ink-muted: #5C6570;
+      --surface: #FAF7F2;
+      --font-head: 'Bai Jamjuree', sans-serif;
+      --font-body: 'Anuphan', sans-serif;
+    }
+    body {
+      font-family: var(--font-body);
+      background: var(--surface);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 40px 20px;
+    }
+    .logo {
+      font-family: var(--font-head); font-size: 1.3rem; color: var(--ink);
+      margin-bottom: 40px; letter-spacing: .02em;
+    }
+    .logo span { color: var(--primary); }
+    .icon { font-size: 4rem; display: block; margin-bottom: 20px; }
+    h1 { font-family: var(--font-head); font-size: clamp(1.8rem, 5vw, 2.8rem); margin-bottom: 16px; }
+    p { color: var(--ink-muted); font-size: 1.05rem; max-width: 480px; margin: 0 auto 12px; line-height: 1.65; }
+    .card {
+      background: #fff; border-radius: 20px; padding: 32px 28px;
+      box-shadow: 0 12px 32px rgba(15,95,217,.12);
+      max-width: 480px; width: 100%; margin: 28px auto;
+      text-align: left;
+    }
+    .card h2 { font-family: var(--font-head); font-size: 1.1rem; margin-bottom: 14px; }
+    .step-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .step-list li { display: flex; gap: 12px; font-size: .92rem; }
+    .step-list li .num {
+      background: var(--primary); color: #fff;
+      font-family: var(--font-head); border-radius: 999px;
+      width: 26px; height: 26px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: .85rem;
+    }
+    .btn-back {
+      display: inline-block; margin-top: 8px;
+      color: var(--primary); font-family: var(--font-head); font-size: .95rem;
+      text-decoration: none; border: 2px solid var(--primary);
+      border-radius: 999px; padding: 10px 24px;
+    }
+    .btn-back:hover { background: var(--primary); color: #fff; }
+  </style>
+</head>
+<body>
+  <div class="logo">GLOW <span>SOCIETY</span></div>
+  <span class="icon">🎉</span>
+  <h1>จองสำเร็จแล้ว!</h1>
+  <p>ยินดีต้อนรับสู่ GLOW SOCIETY เราส่งรายละเอียดไปที่อีเมลของคุณแล้ว</p>
+  <div class="card">
+    <h2>ขั้นตอนต่อไป</h2>
+    <ul class="step-list">
+      <li>
+        <span class="num">1</span>
+        <span>เช็คอีเมล — รายละเอียดรอบ + ที่อยู่สาขาจะส่งไปภายใน 5 นาที</span>
+      </li>
+      <li>
+        <span class="num">2</span>
+        <span>เลือกรอบวันและเวลาที่สะดวก แล้วกดยืนยันในอีเมล</span>
+      </li>
+      <li>
+        <span class="num">3</span>
+        <span>มาตรงเวลา — host จะรออยู่ที่ reception ทักทายก่อนรอบเริ่ม</span>
+      </li>
+    </ul>
+  </div>
+  <p style="font-size:.88rem">
+    มีคำถาม? ทัก <strong>LINE @glowsociety</strong> หรืออีเมล <strong>hello@glowsociety.example</strong>
+  </p>
+  <a class="btn-back" href="/trial">← กลับหน้าหลัก</a>
+</body>
+</html>

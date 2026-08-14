@@ -1,0 +1,52 @@
+{
+  "brand": "GLOW SOCIETY",
+  "currency": "THB",
+  "slug": "trial",
+  "propertyPrefix": "glow",
+  "locations": [
+    { "id": "thonglor", "label": "ทองหล่อ" },
+    { "id": "sathorn", "label": "สาทร" }
+  ],
+  "services": [
+    { "id": "grounding", "label": "Grounding (Ice Bath)" },
+    { "id": "moving", "label": "Moving (Movement Class)" }
+  ],
+  "offers": [
+    {
+      "sku": "GLOW-TRIAL",
+      "name": "Social Trial",
+      "price": 390,
+      "billing": "one_time",
+      "service": "both",
+      "hero": true,
+      "description": "1 รอบ Grounding หรือ Moving + เครื่องดื่ม recovery + buddy matching + ผ้าขนหนู + locker",
+      "stripePriceId": null,
+      "hubspotProductId": null
+    }
+  ],
+  "dealProperties": [
+    { "name": "location", "label": "สาขาที่สนใจ", "type": "enumeration", "fieldType": "select", "optionsFrom": "locations" },
+    { "name": "service_interest", "label": "บริการที่สนใจ", "type": "enumeration", "fieldType": "select", "optionsFrom": "services" },
+    { "name": "package", "label": "แพ็กเกจ (SKU)", "type": "string", "fieldType": "text" },
+    { "name": "source_page", "label": "หน้าที่มาจาก", "type": "string", "fieldType": "text" }
+  ],
+  "hubspot": {
+    "pipeline": "default",
+    "stageOnLead": "appointmentscheduled",
+    "stageOnCheckout": null,
+    "stageOnPaid": "closedwon",
+    "stageIds": {},
+    "dealToContactAssociationTypeId": 3,
+    "pipelineSetup": {
+      "mode": "adopt",
+      "label": "GLOW SOCIETY — Salepage",
+      "stages": [
+        { "key": "lead",     "label": "ลงทะเบียนจากหน้าเพจ",     "probability": 0.2, "use": "onLead" },
+        { "key": "checkout", "label": "เข้าหน้าชำระเงิน",        "probability": 0.5, "use": "onCheckout" },
+        { "key": "followup", "label": "ติดตามอยู่ (ยังไม่จ่าย)",  "probability": 0.3 },
+        { "key": "paid",     "label": "ชำระเงินแล้ว",            "closed": "won",    "use": "onPaid" },
+        { "key": "lost",     "label": "ไม่ไปต่อ",                "closed": "lost" }
+      ]
+    }
+  }
+}

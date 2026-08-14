@@ -1,0 +1,65 @@
+{
+  "outDir": "public/assets",
+  "assets": [
+    {
+      "id": "hero-01",
+      "priority": "P0",
+      "section": "Hero",
+      "file": "hero-01.webp",
+      "aspect_ratio": "16:9",
+      "resolution": "2K",
+      "alt": "กลุ่มเพื่อนสาวไทยกำลังหัวเราะอยู่ที่อ่างแช่น้ำเย็นบนดาดฟ้ากรุงเทพ",
+      "prompt": "Editorial lifestyle photograph, bright natural Thai daylight, midday. Three young Thai and Southeast Asian women (ages 23–28) standing at the edge of a large stainless steel cold plunge tub on an urban Bangkok rooftop, mid-laugh — one reaching out to touch another's arm, genuine expressions, wet hair, dark athletic swimwear. Background: Bangkok city skyline softly out of focus behind them, warm cream-toned rooftop terrace, modern industrial railing. 35mm equivalent lens, f/3.5, foreground subjects sharp, city background blurred. Color grade: warm cream highlights, cool-blue water surface reflections, bold energetic editorial tone. No text overlays, no watermark, NOT posed or choreographed, no fake stock smiles, no foreign-looking models, no spa candles or flower petals, no solo composition."
+    },
+    {
+      "id": "services-grounding-01",
+      "priority": "P0",
+      "section": "Services — Grounding (Ice Bath)",
+      "file": "services-grounding-01.webp",
+      "aspect_ratio": "4:3",
+      "resolution": "1K",
+      "alt": "สองคนไทยแช่น้ำเย็นในอ่างกลมบนดาดฟ้า ยิ้มหัวเราะด้วยความฮึกเหิม",
+      "prompt": "Documentary lifestyle photograph, bright outdoor natural daylight. Two young Thai women (ages 24–28) and one Thai man (age 26) seated together inside a large round stainless steel cold plunge tub, shoulders above the water surface, faces showing exhilarating shock mixed with laughter, one person with hands pressed to their chest, water ripples around them. Background: Bangkok rooftop outdoor space, warm-toned terrace tiles, soft-focus city skyline in the distance. Mid-close shot, 50mm equivalent, f/4, warm highlights on skin tones, cool blue water reflections, vibrant and alive. No text, no watermark, NOT posed, no spa flowers or candles, no western-looking models, no dark moody tone."
+    },
+    {
+      "id": "services-moving-01",
+      "priority": "P0",
+      "section": "Services — Moving (Movement Class)",
+      "file": "services-moving-01.webp",
+      "aspect_ratio": "4:3",
+      "resolution": "1K",
+      "alt": "กลุ่มผู้หญิงยกแขนขึ้นกลางคลาส movement ผมปลิวด้วยพลังงาน",
+      "prompt": "Editorial documentary photograph, bright natural light flooding in through floor-to-ceiling windows. Four young Thai and Southeast Asian women (ages 22–30), mixed body types, wearing athletic wear — sports bras, leggings, shorts — arms raised high in unison during a movement fitness class, hair flying mid-motion, wide genuine smiles of effort and joy, dynamic body positions. Background: modern bright fitness studio interior, polished wooden floor, light cream-painted walls, large windows with natural sunlight. Wide shot, 28mm equivalent, f/5.6, high energy, warm natural editorial light, color grade: clean, slightly warm tones, lifestyle magazine aesthetic. No text, no watermark, NOT yoga or meditation, NOT staged poses to camera, no spa aesthetic, no solo person, no western-looking models."
+    },
+    {
+      "id": "testimonial-01",
+      "priority": "P0",
+      "section": "Testimonials — มิ้นท์ (26, Graphic Designer)",
+      "file": "testimonial-01.webp",
+      "aspect_ratio": "1:1",
+      "resolution": "1K",
+      "alt": "ภาพหน้าตรงของมิ้นท์ กราฟิกดีไซน์เนอร์อายุ 26 ยิ้มสบายๆ",
+      "prompt": "Editorial portrait photograph, soft natural window light from the side. One young Thai woman, age 25–27, creative urban style — oversized graphic tee, small hoop earrings, medium-length wavy or straight black hair — genuine candid half-smile, gaze directed slightly off-camera as if in mid-conversation, not looking directly into lens. Background: warm cream-toned minimal interior, soft bokeh, no distracting elements. 50mm portrait lens, f/2.2, shallow depth of field, warm cream-to-neutral skin-tone highlights, editorial portrait color grade — not overly retouched. No text, no watermark, NOT stiff stock photo pose, no fake wide grin, no heavy beauty filter look, no studio seamless backdrop."
+    },
+    {
+      "id": "testimonial-02",
+      "priority": "P0",
+      "section": "Testimonials — ปาล์ม (29, Developer)",
+      "file": "testimonial-02.webp",
+      "aspect_ratio": "1:1",
+      "resolution": "1K",
+      "alt": "ภาพหน้าตรงของปาล์ม นักพัฒนาซอฟต์แวร์อายุ 29 สีหน้าสงบและเป็นธรรมชาติ",
+      "prompt": "Editorial portrait photograph, natural soft light from a large window. One young Thai man, age 27–30, casually dressed in a plain fitted t-shirt, short neat hair, relaxed genuine expression — natural candid moment, slight calm half-smile, eyes directed slightly off to the side of camera. Background: warm minimal interior, soft-focus light-wood surface or cream-tone wall, nothing distracting. 50mm portrait lens, f/2.2, shallow depth of field, warm neutral color grade, editorial documentary tone. No text, no watermark, NOT stiff or posed, no exaggerated grin, no studio white seamless backdrop, no gym muscle flexing, no western-looking models."
+    },
+    {
+      "id": "testimonial-03",
+      "priority": "P0",
+      "section": "Testimonials — ฟ้า (31, HR Manager)",
+      "file": "testimonial-03.webp",
+      "aspect_ratio": "1:1",
+      "resolution": "1K",
+      "alt": "ภาพหน้าตรงของฟ้า HR Manager อายุ 31 ดูอบอุ่นและมั่นใจ",
+      "prompt": "Editorial portrait photograph, bright soft natural window light from the front. One Thai woman, age 29–33, smart-casual style — relaxed linen blouse or simple knit top, mid-length straight or slightly wavy black hair, confident yet warm expression — genuine natural moment, subtle smile, looking slightly off the camera lens. Background: soft-focus warm interior, neutral cream or light off-white tone, clean and uncluttered. 50mm portrait lens, f/2.4, shallow depth of field, clean warm editorial color grade, professional yet approachable. No text, no watermark, NOT a stiff corporate HR stock photo pose, NOT overly formal, no studio seamless backdrop, no western-looking models."
+    }
+  ]
+}
